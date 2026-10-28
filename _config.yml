@@ -1,0 +1,17 @@
+title: My Blurbs
+description: Short notes and updates
+# For a user site (yourusername.github.io) leave baseurl empty.
+# For a project site, set it to "/repo-name".
+baseurl: ""
+url: "https://yourusername.github.io"
+
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Optional social links shown in the footer by minima
+github_username: yourusername
+
+# Show the "about" page in the header nav
+header_pages:
+  - about.md
