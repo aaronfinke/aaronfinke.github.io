@@ -4,7 +4,7 @@ title: "Neutron PDB Statistics"
 date: 2026-10-28 13:00:00 +0000
 ---
 
-# PDB neutron diffraction entries (RCSB exptl.method = NEUTRON DIFFRACTION, queried 2026-10-27)
+PDB neutron diffraction entries (RCSB exptl.method = NEUTRON DIFFRACTION, queried 2026-10-27)
 
 Total: 262. Per-entry table: `pdb_neutron_entries.csv` (columns `verification`, `verification_source`).
 
