@@ -5,7 +5,7 @@ description: Short notes and updates
 baseurl: ""
 url: "https://aaronfinke.github.io"
 
-theme: minima
+theme: midnight
 plugins:
   - jekyll-feed
 
