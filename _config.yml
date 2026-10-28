@@ -5,9 +5,10 @@ description: Short notes and updates
 baseurl: ""
 url: "https://aaronfinke.github.io"
 
-theme: midnight
+remote_theme: pages-themes/midnight@v0.2.0
 plugins:
-  - jekyll-feed
+- jekyll-remote-theme # add this line to the plugins list if you already have one
+- jekyll-feed
 
 # Optional social links shown in the footer by minima
 github_username: aaronfinke
