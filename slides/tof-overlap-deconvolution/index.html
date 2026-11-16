@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overlapped Reflections Deconvolution</title>
+<style>
+:root {
+  --bg: #0f1420; --fg: #e8ecf3; --muted: #9aa4b5; --accent: #5aa9ff; --warm: #ff9f43;
+  --good: #4cd39a; --bad: #ff6b6b; --panel: #171e2d; --line: #2a3447; --viewer: #0a0e17;
+  --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+}
+:root[data-theme="light"] {
+  --bg: #fbfaf7; --fg: #1d2330; --muted: #5d6676; --accent: #1f6fd1; --warm: #d9711c;
+  --good: #14935f; --bad: #d23b3b; --panel: #f0eee8; --line: #d8d4cb; --viewer: #0a0e17;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); font-family: var(--font); }
+#stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform-origin: center center; }
+.slide { position: absolute; inset: 0; padding: 56px 80px 64px; display: none; flex-direction: column; }
+.slide.active { display: flex; animation: fade .35s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+h1 { font-size: 66px; line-height: 1.08; margin: 0 0 24px; letter-spacing: -0.5px; }
+h2 { font-size: 46px; margin: 0 0 6px; letter-spacing: -0.3px; }
+.kicker { color: var(--accent); font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.sub { color: var(--muted); font-size: 25px; margin: 0 0 22px; }
+p, li { font-size: 25px; line-height: 1.42; }
+ul { margin: 6px 0; padding-left: 28px; }
+li { margin: 6px 0; }
+.cols { display: flex; gap: 40px; flex: 1; min-height: 0; align-items: flex-start; }
+.col { flex: 1; min-width: 0; }
+.narrow { flex: 0 0 470px; }
+.muted { color: var(--muted); }
+.a { color: var(--accent); } .w { color: var(--warm); } .g { color: var(--good); } .b { color: var(--bad); }
+code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.86em; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; }
+math { font-size: 1.12em; }
+math[display="block"] { margin: 14px 0; }
+.eq { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 6px 22px; margin: 10px 0 16px; font-size: 24px; }
+.note { font-size: 20px; color: var(--muted); line-height: 1.4; }
+canvas { display: block; border-radius: 14px; }
+.ctrl { display: flex; gap: 10px; align-items: center; margin-top: 12px; font-size: 19px; color: var(--muted); }
+.ctrl button { font: inherit; font-size: 18px; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; cursor: pointer; }
+.ctrl button.on { border-color: var(--accent); color: var(--accent); }
+.ctrl input[type=range] { width: 300px; accent-color: var(--accent); }
+.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 18px; }
+.step { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; }
+.step .n { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
+.step h3 { font-size: 27px; margin: 6px 0 8px; }
+.step p { font-size: 21px; margin: 0; color: var(--muted); line-height: 1.38; }
+.step.hl { border-color: var(--warm); }
+.step.hl .n { color: var(--warm); }
+table { border-collapse: collapse; width: 100%; font-size: 23px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; font-size: 19px; text-transform: uppercase; letter-spacing: 1px; }
+td.num { font-variant-numeric: tabular-nums; }
+td.up { color: var(--good); font-weight: 700; }
+td.dn { color: var(--bad); font-weight: 700; }
+.big { font-size: 30px; }
+.title-wrap { margin: auto 0; max-width: 1250px; }
+.title-wrap .sub { font-size: 30px; }
+.meta { margin-top: 40px; font-size: 22px; color: var(--muted); }
+.bars { margin-top: 26px; }
+.bars .row { display: grid; grid-template-columns: 220px 1fr 90px; align-items: center; gap: 14px; margin: 10px 0; font-size: 21px; }
+.bars .track { height: 26px; background: var(--panel); border-radius: 6px; position: relative; overflow: hidden; }
+.bars .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; }
+#hud { position: fixed; right: 18px; bottom: 12px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; opacity: .8; }
+#help { position: fixed; left: 18px; bottom: 12px; font-size: 13px; color: var(--muted); opacity: .55; }
+#paused { position: fixed; right: 18px; top: 12px; font-size: 14px; color: var(--warm); display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 -->
+<section class="slide">
+  <div class="title-wrap">
+    <div class="kicker">dials.tof_integrate · neutron time-of-flight Laue</div>
+    <h1>Keeping overlapped reflections:<br>a joint 3D fit of neighbouring peaks</h1>
+    <p class="sub">How <code>overlaps.mode=deconvolve</code> splits shared counts between reflections whose integration boxes overlap.</p>
+    <p class="meta">DIALS branch <code>tof-overlap-handling</code> · November 2026<br>
+    ← → or click to move · <b>p</b> pause animations · <b>t</b> light/dark · <b>f</b> full screen</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-anim="problem">
+  <div class="kicker">The problem</div>
+  <h2>Wide peaks need big boxes, and big boxes overlap</h2>
+  <p class="sub">On MANDI a peak has σ ≈ 2.9 × 2.1 px on the detector, so a box that holds it is 15 px or more across.</p>
+  <div class="cols">
+    <div class="col"><canvas id="cv-problem" width="1000" height="560"></canvas></div>
+    <div class="narrow">
+      <ul>
+        <li>The default <code>overlaps.mode=reject</code> throws away <b>every</b> reflection whose box touches another.</li>
+        <li>Even modest padding around each peak makes a large share of boxes touch, and completeness drops.</li>
+        <li>The large-cell crystals, which need neutrons most, lose the most.</li>
+      </ul>
+      <p class="note">Illustration: random spots with MANDI peak widths. Overlap is judged here on the detector face only; the code also requires the boxes to overlap in ToF.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">Overview</div>
+  <h2>Six steps per experiment</h2>
+  <p class="sub"><code>mask</code> stops after step 4; <code>deconvolve</code> goes on to fit the clusters jointly.</p>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><h3>Own the shared voxels</h3><p>Each voxel in two boxes goes to one reflection. The other copy is flagged <code>Overlapped</code>. This runs before any mask, so a strong neighbour can't capture a weak reflection's foreground.</p></div>
+    <div class="step"><div class="n">2</div><h3>Find foregrounds</h3><p>The ellipse mask is seeded and weighted ignoring <code>Overlapped</code> voxels. Labelling is still geometric, so a real overlap still shows.</p></div>
+    <div class="step"><div class="n">3</div><h3>Mask neighbour foregrounds</h3><p>A voxel in one reflection's foreground is excluded from every other box. Overlapping reflections are flagged <code>overlapped_fg</code> if their own foreground reaches a neighbour, else <code>overlapped_bg</code>.</p></div>
+    <div class="step"><div class="n">4</div><h3>Integrate on clean voxels</h3><p><code>overlapped_bg</code> reflections are integrated as usual ("recovered"). The profile library is built here, from strong clean reflections.</p></div>
+    <div class="step hl"><div class="n">5</div><h3>Group into clusters</h3><p>Reflections whose foregrounds reach each other are coupled. Clusters are the connected components. With <code>estimator=joint</code>, everything else is a cluster of one.</p></div>
+    <div class="step hl"><div class="n">6</div><h3>Fit each cluster jointly</h3><p>One weighted linear solve per cluster for all member intensities, with shapes and positions from the library. Threaded.</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-anim="ownership">
+  <div class="kicker">Steps 1–3 · ownership and masks</div>
+  <h2>Who owns a shared voxel</h2>
+  <div class="cols">
+    <div class="col"><canvas id="cv-own" width="1000" height="610"></canvas></div>
+    <div class="narrow">
+      <p>The nearest predicted centroid wins, with each axis scaled by <b>that reflection's</b> box half-width <i>h</i>:</p>
+      <div class="eq"><math display="block"><msubsup><mi>D</mi><mi>k</mi><mn>2</mn></msubsup><mo>=</mo><munder><mo>∑</mo><mrow><mi>a</mi><mo>∈</mo><mo>{</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mi>t</mi><mo>}</mo></mrow></munder><msup><mrow><mo>(</mo><mfrac><mrow><msub><mi>v</mi><mi>a</mi></msub><mo>−</mo><msub><mi>c</mi><mrow><mi>k</mi><mo>,</mo><mi>a</mi></mrow></msub></mrow><msub><mi>h</mi><mrow><mi>k</mi><mo>,</mo><mi>a</mi></mrow></msub></mfrac><mo>)</mo></mrow><mn>2</mn></msup></math></div>
+      <p>Without the scaling ToF would decide every case: a box is far deeper in frames than it is wide in pixels.</p>
+      <p class="note">Shaded: box A <span class="a">■</span> / box B <span class="w">■</span>; strong shading marks shared voxels. Dots: foreground. <span class="b">✕</span>: a foreground voxel owned by the neighbour.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-anim="model1d">
+  <div class="kicker">Step 6 · the model</div>
+  <h2>With shapes and positions known, the data are linear in the intensities</h2>
+  <div class="eq" style="max-width:900px"><math display="block"><msub><mi>d</mi><mi>i</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>a</mi><mi>k</mi></msub><mspace width="0.15em"></mspace><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>ε</mi><mi>i</mi></msub><mspace width="1.5em"></mspace><mtext>voxel&#160;</mtext><mi>i</mi><mtext>, reflection&#160;</mtext><mi>k</mi><mtext>, unit-intensity profile&#160;</mtext><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></math></div>
+  <div class="cols">
+    <div class="col"><canvas id="cv-model1d" width="1000" height="480"></canvas></div>
+    <div class="narrow">
+      <p>One ToF line through two peaks. Nothing in <i>P</i> is fitted: only the amplitudes <i>a<sub>k</sub></i>.</p>
+      <p>Far apart, each amplitude is measured independently. As the peaks close in, the fit still splits the counts, but the two estimates become <b>anticorrelated</b> and their errors grow.</p>
+      <p class="note">Simulated counts, iBIX ToF shape, flat background, 4 reweighting passes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-anim="view3d">
+  <div class="kicker">Step 6 · the profile</div>
+  <h2>Each profile is a ToF line shape times a detector-face Gaussian</h2>
+  <div class="cols">
+    <div class="col">
+      <canvas id="cv-3d" width="960" height="560"></canvas>
+      <div class="ctrl"><span>show:</span>
+        <button data-mode="data" class="on">counts</button>
+        <button data-mode="model">model A + B</button>
+        <button data-mode="owner">voxel owners</button>
+        <span id="mode-label" style="margin-left:10px"></span>
+        <span style="margin-left:auto">drag to rotate</span></div>
+    </div>
+    <div class="narrow">
+      <div class="eq"><math display="block"><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>=</mo><mfrac><mrow><msub><mi>T</mi><mi>k</mi></msub><mo>(</mo><msub><mi>t</mi><mi>i</mi></msub><mo>)</mo><mspace width="0.15em"></mspace><msub><mi>G</mi><mi>k</mi></msub><mo>(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><msub><mi>y</mi><mi>i</mi></msub><mo>)</mo></mrow><msub><mi>Z</mi><mi>k</mi></msub></mfrac><mo>,</mo><mspace width="0.8em"></mspace><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><msub><mtext>box</mtext><mi>k</mi></msub></mrow></munder><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn></math></div>
+      <ul>
+        <li><i>T</i>: iBIX back-to-back exponential ⊗ Gaussian in ToF (α, β, σ).</li>
+        <li><i>G</i>: bivariate Gaussian on the face (σ<sub>x</sub>, σ<sub>y</sub>, ρ).</li>
+        <li>Normalised over the box, so <i>a<sub>k</sub></i> is the intensity <b>inside the box</b>: what summation measures.</li>
+        <li>Each voxel enters the fit once, from its owner's shoebox, with the owner's background.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-anim="broadening">
+  <div class="kicker">Where shapes and positions come from</div>
+  <h2>The profile library, and why the profile is broadened</h2>
+  <div class="cols">
+    <div class="col"><canvas id="cv-broad" width="1000" height="600"></canvas></div>
+    <div class="narrow">
+      <p>Strong clean reflections give, per panel: the ToF shape, the face covariance, the median offset of observed from predicted position, and the <b>scatter s</b> of that offset.</p>
+      <p>A peak is placed at its prediction plus the median offset. Its true position is off by an unknown δ. A sharp profile in the wrong place always loses intensity. Averaged over δ, the expected peak is the shape convolved with the scatter:</p>
+      <div class="eq"><math display="block"><msup><mi>σ</mi><mrow><mo>′</mo><mn>2</mn></mrow></msup><mo>=</mo><msup><mi>σ</mi><mn>2</mn></msup><mo>+</mo><msup><mi>s</mi><mn>2</mn></msup><mspace width="0.8em"></mspace><mtext>in&#160;</mtext><mi>x</mi><mo>,</mo><mi>y</mi><mo>,</mo><mtext>&#160;ToF</mtext></math>
+      <math display="block"><mi mathvariant="normal">E</mi><mo>[</mo><mover><mi>a</mi><mo>^</mo></mover><mo>/</mo><mi>a</mi><mo>]</mo><mo>=</mo><msqrt><mfrac><mrow><mn>2</mn><msubsup><mi>σ</mi><mi>p</mi><mn>2</mn></msubsup></mrow><mrow><msubsup><mi>σ</mi><mi>p</mi><mn>2</mn></msubsup><mo>+</mo><msup><mi>σ</mi><mn>2</mn></msup><mo>+</mo><msup><mi>s</mi><mn>2</mn></msup></mrow></mfrac></msqrt></math></div>
+      <p class="note">σ<sub>p</sub> = width of the fitted profile. It equals 1 when σ<sub>p</sub>² = σ² + s².</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-anim="conditioning">
+  <div class="kicker">The solve</div>
+  <h2>Weighted least squares, and what closeness does to it</h2>
+  <div class="cols">
+    <div class="col">
+      <canvas id="cv-cond" width="1000" height="560"></canvas>
+      <div class="ctrl"><span>separation d / σ</span><input type="range" id="sep" min="0" max="5" step="0.01" value="3"><span id="sep-v" style="min-width:60px"></span><button id="sep-auto" class="on">auto</button></div>
+    </div>
+    <div class="narrow">
+      <div class="eq"><math display="block"><msup><mi>χ</mi><mn>2</mn></msup><mo>=</mo><munder><mo>∑</mo><mi>i</mi></munder><mfrac><msup><mrow><mo>(</mo><msub><mi>d</mi><mi>i</mi></msub><mo>−</mo><msub><mo>∑</mo><mi>k</mi></msub><msub><mi>a</mi><mi>k</mi></msub><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>)</mo></mrow><mn>2</mn></msup><msub><mi>V</mi><mi>i</mi></msub></mfrac></math>
+      <math display="block"><mover><mi mathvariant="bold">a</mi><mo>^</mo></mover><mo>=</mo><msup><mrow><mo>(</mo><msup><mi mathvariant="bold">P</mi><mi>T</mi></msup><mi mathvariant="bold">W</mi><mi mathvariant="bold">P</mi><mo>)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><msup><mi mathvariant="bold">P</mi><mi>T</mi></msup><mi mathvariant="bold">W</mi><mi mathvariant="bold">d</mi></math>
+      <math display="block"><mi mathvariant="bold">C</mi><mo>=</mo><msup><mrow><mo>(</mo><msup><mi mathvariant="bold">P</mi><mi>T</mi></msup><mi mathvariant="bold">W</mi><mi mathvariant="bold">P</mi><mo>)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo>,</mo><mspace width="0.6em"></mspace><msub><mi>W</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>/</mo><msub><mi>V</mi><mi>i</mi></msub></math></div>
+      <p>The <i>K</i> × <i>K</i> system is inverted by eigendecomposition. For two equal Gaussians a distance <i>d</i> apart:</p>
+      <div class="eq"><math display="block"><mtext>corr</mtext><mo>(</mo><msub><mover><mi>a</mi><mo>^</mo></mover><mn>1</mn></msub><mo>,</mo><msub><mover><mi>a</mi><mo>^</mo></mover><mn>2</mn></msub><mo>)</mo><mo>=</mo><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><msup><mi>d</mi><mn>2</mn></msup><mo>/</mo><mn>4</mn><msup><mi>σ</mi><mn>2</mn></msup></mrow></msup></math></div>
+      <p class="note">At d → 0 only a₁ + a₂ is measured. A cluster whose smallest eigenvalue is below 10⁻¹² of the largest is left unfitted.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-anim="irls">
+  <div class="kicker">The weights</div>
+  <h2>Weight by the counts the model expects, not the counts observed</h2>
+  <div class="cols">
+    <div class="col"><canvas id="cv-irls" width="1000" height="620"></canvas></div>
+    <div class="narrow">
+      <p>Most voxels hold 0 or 1 count. Weighting by the observed counts gives the voxels that saw a count less weight than the empty ones, and the estimate reads low.</p>
+      <p>Instead, each voxel's variance comes from the current model, and the solve is repeated (first pass flat, then 4 passes):</p>
+      <div class="eq"><math display="block"><msub><mi>V</mi><mi>i</mi></msub><mo>=</mo><msubsup><mi>g</mi><mi>i</mi><mn>2</mn></msubsup><mrow><mo>(</mo><msub><mi>B</mi><mi>i</mi></msub><mo>+</mo><mfrac><mrow><mo form="prefix">max</mo><mo>(</mo><msub><mi>m</mi><mi>i</mi></msub><mo>,</mo><mn>0</mn><mo>)</mo></mrow><msub><mi>g</mi><mi>i</mi></msub></mfrac><mo>)</mo></mrow><mo>+</mo><msubsup><mi>V</mi><mi>i</mi><mtext>spec</mtext></msubsup></math>
+      <math display="block"><msub><mi>m</mi><mi>i</mi></msub><mo>=</mo><munder><mo>∑</mo><mi>k</mi></munder><msub><mover><mi>a</mi><mo>^</mo></mover><mi>k</mi></msub><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></math></div>
+      <p>At convergence this is the <b>Poisson maximum-likelihood</b> solution.</p>
+      <p class="note"><i>g<sub>i</sub></i>: corrected value of one count (bin width, Lorentz, incident spectrum). <i>B<sub>i</sub></i>: background in counts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-anim="bgshift">
+  <div class="kicker">Error model</div>
+  <h2>Three parts of the covariance</h2>
+  <div class="cols">
+    <div class="col" style="flex:0 0 640px">
+      <p><b>1 · Counting.</b> <b>C</b> from the solve. The voxel variance from the corrector already holds the background, <i>B</i>(1 + n<sub>sig</sub>/n<sub>bg</sub>); that part is taken out so it is not counted twice.</p>
+      <p><b>2 · Model misfit.</b> Reduced χ² over the peak voxels (profile ≥ 5% of its maximum):</p>
+      <div class="eq"><math display="block"><msubsup><mi>χ</mi><mi>ν</mi><mn>2</mn></msubsup><mo>=</mo><mfrac><mn>1</mn><mrow><msub><mi>n</mi><mtext>peak</mtext></msub><mo>−</mo><mi>K</mi></mrow></mfrac><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><mtext>peak</mtext></mrow></munder><mfrac><msup><mrow><mo>(</mo><msub><mi>d</mi><mi>i</mi></msub><mo>−</mo><msub><mi>m</mi><mi>i</mi></msub><mo>)</mo></mrow><mn>2</mn></msup><msub><mi>V</mi><mi>i</mi></msub></mfrac><mo>,</mo><mspace width="0.8em"></mspace><mi mathvariant="bold">C</mi><mo>←</mo><mo form="prefix">max</mo><mo>(</mo><mn>1</mn><mo>,</mo><msubsup><mi>χ</mi><mi>ν</mi><mn>2</mn></msubsup><mo>)</mo><mspace width="0.15em"></mspace><mi mathvariant="bold">C</mi></math></div>
+      <p><b>3 · Background level.</b> One common shift of every voxel an owner <i>o</i> supplies, propagated through the fit:</p>
+      <div class="eq"><math display="block"><mi mathvariant="bold">C</mi><mo>+=</mo><munder><mo>∑</mo><mi>o</mi></munder><mfrac><msub><mover><mi>B</mi><mo>¯</mo></mover><mi>o</mi></msub><msub><mi>n</mi><mrow><mtext>bg</mtext><mo>,</mo><mi>o</mi></mrow></msub></mfrac><mo>(</mo><msub><mi mathvariant="bold">C</mi><mn>0</mn></msub><msub><mi mathvariant="bold">u</mi><mi>o</mi></msub><mo>)</mo><msup><mrow><mo>(</mo><msub><mi mathvariant="bold">C</mi><mn>0</mn></msub><msub><mi mathvariant="bold">u</mi><mi>o</mi></msub><mo>)</mo></mrow><mi>T</mi></msup><mo>,</mo><mspace width="0.6em"></mspace><msub><mrow><mo>(</mo><msub><mi mathvariant="bold">u</mi><mi>o</mi></msub><mo>)</mo></mrow><mi>k</mi></msub><mo>=</mo><munder><mo>∑</mo><mrow><mi>i</mi><mo>∈</mo><mi>o</mi></mrow></munder><msub><mi>w</mi><mi>i</mi></msub><msub><mi>g</mi><mi>i</mi></msub><msub><mi>P</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub></math></div>
+    </div>
+    <div class="col">
+      <canvas id="cv-bg" width="800" height="520"></canvas>
+      <p class="note">The background level is estimated, not known. Its error moves every voxel of a shoebox together, so it moves the fitted intensities together: one correlated term, not independent noise in each voxel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-anim="boxnorm">
+  <div class="kicker">A choice that matters</div>
+  <h2>Normalise over the box, not the whole peak</h2>
+  <div class="cols">
+    <div class="col"><canvas id="cv-box" width="1000" height="520"></canvas></div>
+    <div class="narrow">
+      <p>With <i>P</i> normalised over the box, <i>a</i> is the intensity <b>inside the box</b>, as summation measures it.</p>
+      <p>Normalising over the whole peak instead extrapolates past the box edge: the estimate becomes <i>a</i>/<i>f</i>, with <i>f</i> the fraction of the model inside. Every error in the model's tails is multiplied by 1/<i>f</i>.</p>
+      <p>Tried and reverted: reflections with small <i>f</i> blow up, and cut-offs on <i>f</i> still merge worse than box normalisation. <i>f</i> is kept as <code>overlap.fit.fraction</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-anim="weak">
+  <div class="kicker">overlaps.estimator=joint</div>
+  <h2>One estimator for every reflection</h2>
+  <div class="cols">
+    <div class="col">
+      <ul>
+        <li><code>separate</code>: only <code>overlapped_fg</code> reflections take the 3D fit; the rest keep the 1D <code>profilelib</code> fit, rescaled by one median 3D/1D ratio.</li>
+        <li>One ratio can't reconcile the two: the 1D fit <b>never goes negative</b> and reads weak reflections high. The 3D fit tracks summation at every strength.</li>
+        <li><code>joint</code>: every reflection is fitted with the 3D model, coupled ones in their clusters, the rest alone. The 1D fit is kept as <code>intensity.prf_1d</code>.</li>
+        <li>A reflection the 3D model can't fit loses its profile intensity rather than fall back to 1D, so the estimators never mix.</li>
+      </ul>
+    </div>
+    <div class="col"><canvas id="cv-weak" width="760" height="460"></canvas>
+      <p class="note">Schematic: a weak reflection (true I = 0.5σ) measured many times by an unbiased estimator and by one that cannot return a negative value.</p></div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="kicker">Limits and next steps</div>
+  <h2>What the model does not do yet</h2>
+  <div class="cols">
+    <div class="col">
+      <ul>
+        <li><b>Positions are fixed</b> at prediction + panel median offset. Unbiased on average, but not for one close pair. <span class="muted">Next: refine each peak's centre within its cluster, restrained by the library's position scatter.</span></li>
+        <li><b>Some data sets need a large proportional error term</b> in scaling. <span class="muted">Hypothesis: the share of a peak inside its box varies with box size between equivalents. Next: normalise over a fixed window per panel.</span></li>
+        <li><b>Background</b> is fitted before the peaks, not with them.</li>
+        <li><b>Plumbing</b>: <code>dials.export intensity=profile+sum</code> drops deconvolved reflections; xia2 does not expose the options yet.</li>
+      </ul>
+    </div>
+    <div class="narrow">
+      <div class="step" style="margin-top:8px">
+        <div class="n">To use it</div>
+        <p style="font-size:22px;color:var(--fg);margin-top:8px"><code>method=profile_1d_profilelib</code><br><code>overlaps.mode=deconvolve</code><br><code>overlaps.estimator=joint</code><br><code>bbox_xy_padding=6</code><br>plus <code>dials.generate_mask border=N</code> for dead panel edges</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+<div id="hud"></div>
+<div id="help">← → navigate · p pause · t theme · f full screen</div>
+<div id="paused">paused</div>
+
+<script>
+"use strict";
+// ---------- deck ----------
+const $ = (s, r = document) => r.querySelector(s);
+const slides = [...document.querySelectorAll('.slide')];
+const stage = $('#stage');
+let cur = 0, tSlide = 0, paused = false;
+function fit() {
+  const s = Math.min(innerWidth / 1600, innerHeight / 900);
+  stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+}
+function show(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, j) => s.classList.toggle('active', j === cur));
+  $('#hud').textContent = `${cur + 1} / ${slides.length}`;
+  history.replaceState(null, '', '#' + (cur + 1));
+  tSlide = 0;
+}
+addEventListener('resize', fit);
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (['ArrowRight', 'PageDown', ' ', 'ArrowDown'].includes(e.key)) { show(cur + 1); e.preventDefault(); }
+  else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(e.key)) { show(cur - 1); e.preventDefault(); }
+  else if (e.key === 'Home') show(0);
+  else if (e.key === 'End') show(slides.length - 1);
+  else if (e.key === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === 't') {
+    const r = document.documentElement;
+    r.dataset.theme = r.dataset.theme === 'light' ? 'dark' : 'light';
+    readColors();
+  } else if (e.key === 'p') { paused = !paused; $('#paused').style.display = paused ? 'block' : 'none'; }
+});
+document.addEventListener('click', e => {
+  if (e.target.closest('canvas, button, input, .ctrl, a')) return;
+  show(e.clientX > innerWidth / 3 ? cur + 1 : cur - 1);
+});
+
+// ---------- helpers ----------
+const TAU = Math.PI * 2;
+let COL = {}, FONT = '';
+function readColors() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ['bg', 'fg', 'muted', 'accent', 'warm', 'good', 'bad', 'panel', 'line', 'viewer']) COL[k] = cs.getPropertyValue('--' + k).trim();
+  FONT = cs.getPropertyValue('--font').trim();
+}
+function rgb(name) { const h = (COL[name] || name).replace('#', ''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function rgba(name, a) { const [r, g, b] = rgb(name); return `rgba(${r},${g},${b},${a})`; }
+function mix(c1, c2, f) { return [0, 1, 2].map(i => Math.round(c1[i] * (1 - f) + c2[i] * f)); }
+function font(px, w = 500) { return `${w} ${px}px ${FONT}`; }
+function rng(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function gauss(r) { let u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * r()); }
+function poisson(r, m) {
+  if (m <= 0) return 0;
+  if (m > 30) return Math.max(0, Math.round(m + Math.sqrt(m) * gauss(r)));
+  const L = Math.exp(-m); let k = 0, p = 1;
+  do { k++; p *= r(); } while (p > L);
+  return k - 1;
+}
+// e^u * erfc(y), stable (Numerical Recipes erfcc)
+function expErfc(u, y) {
+  const z = Math.abs(y), t = 1 / (1 + 0.5 * z);
+  const poly = -z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277))))))));
+  return y >= 0 ? t * Math.exp(u + poly) : 2 * Math.exp(u) - t * Math.exp(u + poly);
+}
+// iBIX back-to-back exponential convolved with a Gaussian
+function ibix(t, t0, al, be, sg) {
+  const d = t - t0, s2 = sg * sg, N = al * be / (2 * (al + be));
+  const u = al / 2 * (al * s2 + 2 * d), v = be / 2 * (be * s2 - 2 * d);
+  const y = (al * s2 + d) / (Math.SQRT2 * sg), z = (be * s2 - d) / (Math.SQRT2 * sg);
+  return N * (expErfc(u, y) + expErfc(v, z));
+}
+function normalise(a) { let s = 0; for (const x of a) s += x; return a.map(x => x / s); }
+function setup(cv) {
+  const w = +cv.getAttribute('width'), h = +cv.getAttribute('height');
+  cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  cv.width = w * 2; cv.height = h * 2;
+  const g = cv.getContext('2d'); g.setTransform(2, 0, 0, 2, 0, 0);
+  return { g, w, h };
+}
+// weighted least squares for K = 1 or 2 components
+function wls(Ps, d, v) {
+  const K = Ps.length, M = [[0, 0], [0, 0]], b = [0, 0];
+  for (let i = 0; i < d.length; i++) {
+    const w = 1 / v[i];
+    for (let k = 0; k < K; k++) {
+      b[k] += w * Ps[k][i] * d[i];
+      for (let l = 0; l < K; l++) M[k][l] += w * Ps[k][i] * Ps[l][i];
+    }
+  }
+  if (K === 1) { const c = 1 / M[0][0]; return { a: [c * b[0]], C: [[c]] }; }
+  const det = M[0][0] * M[1][1] - M[0][1] * M[1][0];
+  const C = [[M[1][1] / det, -M[0][1] / det], [-M[1][0] / det, M[0][0] / det]];
+  return { a: [C[0][0] * b[0] + C[0][1] * b[1], C[1][0] * b[0] + C[1][1] * b[1]], C };
+}
+// reweighting by model-expected counts, as tof_deconvolve_overlaps does (gain 1)
+function irls(Ps, n, bg, passes = 4, trace = null) {
+  const N = n.length, d = n.map(x => x - bg);
+  let tot = 0; for (const x of n) tot += Math.abs(x);
+  let v = new Array(N).fill(Math.max(tot / N, 0.01));
+  let f = wls(Ps, d, v); if (trace) trace.push(f.a[0]);
+  for (let it = 0; it < passes; it++) {
+    for (let i = 0; i < N; i++) {
+      let m = 0; for (let k = 0; k < Ps.length; k++) m += f.a[k] * Ps[k][i];
+      v[i] = Math.max(bg + Math.max(m, 0), 0.01);
+    }
+    f = wls(Ps, d, v); if (trace) trace.push(f.a[0]);
+  }
+  return f;
+}
+function lineTo(g, pts) { g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); }
+function axis(g, x0, y0, w, h) {
+  g.strokeStyle = COL.line; g.lineWidth = 1.5;
+  g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0, y0 + h); g.lineTo(x0 + w, y0 + h); g.stroke();
+}
+function label(g, txt, x, y, color = 'muted', px = 17, w = 500, align = 'left') {
+  g.fillStyle = COL[color] || color; g.font = font(px, w); g.textAlign = align; g.fillText(txt, x, y); g.textAlign = 'left';
+}
+
+const anims = {};
+
+// ---------- 2: detector panel, boxes grow with padding ----------
+anims.problem = {
+  init() {
+    this.S = setup($('#cv-problem'));
+    const r = rng(11), W = 256;
+    this.spots = [];
+    for (let i = 0; i < 60; i++) this.spots.push({ x: 12 + 232 * r(), y: 12 + 232 * r(), I: 220 * Math.exp(0.8 * gauss(r)) });
+    const arr = new Float32Array(W * W).fill(0.35);
+    for (const s of this.spots) {
+      const k = s.I / (TAU * 2.9 * 2.1);
+      for (let y = Math.max(0, Math.floor(s.y - 10)); y < Math.min(W, s.y + 10); y++)
+        for (let x = Math.max(0, Math.floor(s.x - 12)); x < Math.min(W, s.x + 12); x++) {
+          const dx = x + 0.5 - s.x, dy = y + 0.5 - s.y;
+          arr[y * W + x] += k * Math.exp(-0.5 * (dx * dx / 8.41 + dy * dy / 4.41));
+        }
+    }
+    const off = document.createElement('canvas'); off.width = off.height = W;
+    const og = off.getContext('2d'), im = og.createImageData(W, W);
+    const stops = [[10, 14, 23], [28, 58, 120], [90, 169, 255], [235, 245, 255]];
+    for (let i = 0; i < W * W; i++) {
+      const v = Math.min(1, Math.sqrt(poisson(r, arr[i]) / 14)) * 3;
+      const j = Math.min(2, Math.floor(v)), c = mix(stops[j], stops[j + 1], v - j);
+      im.data.set([c[0], c[1], c[2], 255], 4 * i);
+    }
+    og.putImageData(im, 0, 0); this.off = off;
+  },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const X0 = 0, Y0 = 0, SZ = 560, sc = SZ / 256;
+    g.save(); g.beginPath(); g.roundRect(X0, Y0, SZ, SZ, 14); g.clip();
+    g.imageSmoothingEnabled = false; g.drawImage(this.off, X0, Y0, SZ, SZ);
+    const cyc = (t * 0.7) % 14, p = cyc < 7 ? Math.floor(cyc) : Math.max(0, 13 - Math.floor(cyc));
+    const hh = 1.5 + p, sp = this.spots, ov = sp.map(() => false);
+    for (let i = 0; i < sp.length; i++) for (let j = i + 1; j < sp.length; j++)
+      if (Math.abs(sp[i].x - sp[j].x) < 2 * hh && Math.abs(sp[i].y - sp[j].y) < 2 * hh) ov[i] = ov[j] = true;
+    let n = 0;
+    sp.forEach((s, i) => {
+      if (ov[i]) n++;
+      g.strokeStyle = ov[i] ? 'rgba(255,159,67,0.95)' : 'rgba(76,211,154,0.9)'; g.lineWidth = 1.6;
+      g.strokeRect(X0 + (s.x - hh) * sc, Y0 + (s.y - hh) * sc, 2 * hh * sc, 2 * hh * sc);
+    });
+    g.restore();
+    const tx = 610;
+    label(g, 'bbox_xy_padding', tx, 40, 'muted', 22);
+    label(g, `${p} px`, tx, 108, 'fg', 64, 700);
+    label(g, 'box size', tx, 160, 'muted', 22);
+    label(g, `${3 + 2 * p} × ${3 + 2 * p} px`, tx, 200, 'fg', 34, 700);
+    label(g, 'boxes touching a neighbour', tx, 262, 'muted', 22);
+    label(g, `${n} / ${sp.length}`, tx, 316, 'warm', 48, 700);
+    g.fillStyle = COL.panel; g.fillRect(tx, 336, 340, 16);
+    g.fillStyle = COL.warm; g.fillRect(tx, 336, 340 * n / sp.length, 16);
+    label(g, 'reject mode drops all of them', tx, 390, 'fg', 22, 600);
+    g.fillStyle = 'rgba(76,211,154,0.9)'; g.fillRect(tx, 432, 16, 16); label(g, 'isolated box', tx + 26, 446, 'muted', 19);
+    g.fillStyle = 'rgba(255,159,67,0.95)'; g.fillRect(tx, 462, 16, 16); label(g, 'overlapping box', tx + 26, 476, 'muted', 19);
+  }
+};
+
+// ---------- 4: ownership on the detector face ----------
+anims.ownership = {
+  init() { this.S = setup($('#cv-own')); },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const cs = 24, ox = 30, oy = 10, NX = 39, NY = 21;
+    const A = { cx: 13.2, cy: 10.6, hx: 5.5, hy: 4.5, rx: 3.1, ry: 2.4 };
+    const B = { cx: 24.0 + 5.2 * Math.sin(t * 0.45), cy: 10.2, hx: 7.5, hy: 6.5, rx: 3.5, ry: 2.7 };
+    const inBox = (o, x, y) => Math.abs(x - o.cx) < o.hx && Math.abs(y - o.cy) < o.hy;
+    const D2 = (o, x, y) => ((x - o.cx) / o.hx) ** 2 + ((y - o.cy) / o.hy) ** 2;
+    const inFg = (o, x, y) => ((x - o.cx) / o.rx) ** 2 + ((y - o.cy) / o.ry) ** 2 <= 1;
+    let shared = 0, coupled = false;
+    const cells = [];
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+      const x = i + 0.5, y = j + 0.5, a = inBox(A, x, y), b = inBox(B, x, y);
+      const X = ox + i * cs, Y = oy + j * cs;
+      if (!a && !b) { g.strokeStyle = rgba('line', 0.6); g.lineWidth = 1; g.strokeRect(X + 0.5, Y + 0.5, cs - 1, cs - 1); continue; }
+      const both = a && b; if (both) shared++;
+      const owner = both ? (D2(A, x, y) <= D2(B, x, y) ? 'A' : 'B') : (a ? 'A' : 'B');
+      g.fillStyle = rgba(owner === 'A' ? 'accent' : 'warm', both ? 0.55 : 0.17);
+      g.fillRect(X + 1, Y + 1, cs - 2, cs - 2);
+      const fa = a && inFg(A, x, y), fb = b && inFg(B, x, y);
+      cells.push({ X, Y, fa, fb, owner });
+      if ((fa && (owner === 'B' || fb)) || (fb && owner === 'A')) coupled = true;
+    }
+    for (const c of cells) {
+      for (const [f, name, mine] of [[c.fa, 'accent', 'A'], [c.fb, 'warm', 'B']]) {
+        if (!f) continue;
+        if (c.owner === mine) { g.fillStyle = COL[name]; g.beginPath(); g.arc(c.X + cs / 2, c.Y + cs / 2, 4, 0, TAU); g.fill(); }
+        else { g.strokeStyle = COL.bad; g.lineWidth = 2.5; g.beginPath(); g.moveTo(c.X + 6, c.Y + 6); g.lineTo(c.X + cs - 6, c.Y + cs - 6); g.moveTo(c.X + cs - 6, c.Y + 6); g.lineTo(c.X + 6, c.Y + cs - 6); g.stroke(); }
+      }
+    }
+    for (const [o, name, lab] of [[A, 'accent', 'A'], [B, 'warm', 'B']]) {
+      g.strokeStyle = COL[name]; g.lineWidth = 2.5;
+      g.strokeRect(ox + (o.cx - o.hx) * cs, oy + (o.cy - o.hy) * cs, 2 * o.hx * cs, 2 * o.hy * cs);
+      g.setLineDash([6, 5]); g.lineWidth = 2;
+      g.beginPath(); g.ellipse(ox + o.cx * cs, oy + o.cy * cs, o.rx * cs, o.ry * cs, 0, 0, TAU); g.stroke(); g.setLineDash([]);
+      const X = ox + o.cx * cs, Y = oy + o.cy * cs;
+      g.strokeStyle = COL.fg; g.lineWidth = 2; g.beginPath(); g.moveTo(X - 8, Y); g.lineTo(X + 8, Y); g.moveTo(X, Y - 8); g.lineTo(X, Y + 8); g.stroke();
+      label(g, lab, ox + (o.cx - o.hx) * cs + 6, oy + (o.cy - o.hy) * cs + 22, name, 20, 800);
+    }
+    const y0 = oy + NY * cs + 40;
+    let msg, det, col;
+    if (!shared) { msg = 'Boxes apart'; det = 'both integrated on their own'; col = 'good'; }
+    else if (!coupled) { msg = 'Boxes overlap, foregrounds apart → overlapped_bg'; det = 'shared voxels masked; both integrated as usual ("recovered")'; col = 'accent'; }
+    else { msg = 'A foreground reaches the neighbour → overlapped_fg'; det = 'coupled: the pair is fitted jointly'; col = 'warm'; }
+    label(g, msg, ox, y0, col, 23, 700);
+    label(g, `${det} · ${shared} shared voxels in this ToF slice`, ox, y0 + 30, 'muted', 18);
+  }
+};
+
+// ---------- 5: two peaks along ToF ----------
+anims.model1d = {
+  init() {
+    this.S = setup($('#cv-model1d'));
+    const r = rng(5); this.z = Array.from({ length: 64 }, () => gauss(r));
+    this.yMax = 300;
+  },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const T = 64, tt = Array.from({ length: T }, (_, i) => i + 0.5);
+    const sep = 11 + 8 * Math.cos(t * 0.35), t1 = 20, t2 = 20 + sep;
+    const P1 = normalise(tt.map(x => ibix(x, t1, 0.9, 0.25, 1.2)));
+    const P2 = normalise(tt.map(x => ibix(x, t2, 0.9, 0.25, 1.2)));
+    const bg = 8, A1 = 1600, A2 = 800;
+    const n = tt.map((_, i) => { const m = bg + A1 * P1[i] + A2 * P2[i]; return Math.max(0, Math.round(m + Math.sqrt(m) * this.z[i])); });
+    const f = irls([P1, P2], n, bg);
+    const x0 = 70, y0 = 20, W = 900, H = 340;
+    const target = Math.max(...n) * 1.15; this.yMax += (target - this.yMax) * 0.08;
+    const X = i => x0 + (i / T) * W, Y = v => y0 + H - (v / this.yMax) * H;
+    axis(g, x0, y0, W, H);
+    g.fillStyle = rgba('muted', 0.45);
+    for (let i = 0; i < T; i++) g.fillRect(X(i) + 1, Y(n[i]), W / T - 2, y0 + H - Y(n[i]));
+    for (const [P, a, name] of [[P1, f.a[0], 'accent'], [P2, f.a[1], 'warm']]) {
+      const pts = tt.map((_, i) => [X(i + 0.5), Y(bg + a * P[i])]);
+      g.fillStyle = rgba(name, 0.22); lineTo(g, [[X(0.5), Y(bg)], ...pts, [X(T - 0.5), Y(bg)]]); g.fill();
+      g.strokeStyle = COL[name]; g.lineWidth = 2.5; lineTo(g, pts); g.stroke();
+    }
+    g.strokeStyle = COL.fg; g.lineWidth = 2; lineTo(g, tt.map((_, i) => [X(i + 0.5), Y(bg + f.a[0] * P1[i] + f.a[1] * P2[i])])); g.stroke();
+    g.setLineDash([5, 5]); g.strokeStyle = COL.muted; lineTo(g, [[x0, Y(bg)], [x0 + W, Y(bg)]]); g.stroke(); g.setLineDash([]);
+    label(g, 'ToF frame →', x0 + W - 110, y0 + H + 26, 'muted', 17);
+    label(g, 'counts', 8, y0 + 14, 'muted', 17);
+    label(g, 'background', x0 + 8, Y(bg) - 6, 'muted', 15);
+    const s1 = Math.sqrt(f.C[0][0]), s2 = Math.sqrt(f.C[1][1]), rho = f.C[0][1] / (s1 * s2);
+    const yb = y0 + H + 62;
+    label(g, `â₁ = ${f.a[0].toFixed(0)} ± ${s1.toFixed(0)}  (true ${A1})`, x0, yb, 'accent', 22, 700);
+    label(g, `â₂ = ${f.a[1].toFixed(0)} ± ${s2.toFixed(0)}  (true ${A2})`, x0 + 340, yb, 'warm', 22, 700);
+    label(g, `corr(â₁, â₂) = ${rho.toFixed(2)}`, x0 + 680, yb, 'fg', 22, 700);
+    label(g, `separation ${sep.toFixed(1)} frames`, x0 + W - 200, y0 + 18, 'muted', 18);
+  }
+};
+
+// ---------- 6: 3D voxels ----------
+anims.view3d = {
+  init() {
+    this.S = setup($('#cv-3d'));
+    const r = rng(9), nx = 20, ny = 20, nt = 40;
+    Object.assign(this, { nx, ny, nt, yaw: 0.7, pitch: 0.38, mode: 'data', drag: null });
+    const bvg = (dx, dy, sx, sy, rho) => Math.exp(-0.5 / (1 - rho * rho) * (dx * dx / (sx * sx) - 2 * rho * dx * dy / (sx * sy) + dy * dy / (sy * sy)));
+    const A = { c: [8, 9, 15], box: [[2, 15], [4, 15], [4, 30]] };
+    const B = { c: [12, 11, 22], box: [[6, 19], [5, 17], [10, 36]] };
+    this.A = A; this.B = B;
+    const tA = normalise(Array.from({ length: nt }, (_, k) => ibix(k + 0.5, A.c[2], 0.9, 0.25, 1.3)));
+    const tB = normalise(Array.from({ length: nt }, (_, k) => ibix(k + 0.5, B.c[2], 0.9, 0.25, 1.3)));
+    const inBox = (o, i, j, k) => i >= o.box[0][0] && i < o.box[0][1] && j >= o.box[1][0] && j < o.box[1][1] && k >= o.box[2][0] && k < o.box[2][1];
+    const half = o => o.box.map(([a, b]) => (b - a) / 2), ctr = o => o.box.map(([a, b]) => (a + b) / 2);
+    const D2 = (o, i, j, k) => { const hh = half(o), cc = o.c; return ((i + .5 - cc[0]) / hh[0]) ** 2 + ((j + .5 - cc[1]) / hh[1]) ** 2 + ((k + .5 - cc[2]) / hh[2]) ** 2; };
+    const vox = []; let vmax = 0;
+    for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) for (let k = 0; k < nt; k++) {
+      const vA = 1.0 * bvg(i + .5 - A.c[0], j + .5 - A.c[1], 2.2, 1.6, 0.25) * tA[k];
+      const vB = 0.6 * bvg(i + .5 - B.c[0], j + .5 - B.c[1], 2.2, 1.6, 0.25) * tB[k];
+      const a = inBox(A, i, j, k), b = inBox(B, i, j, k);
+      vmax = Math.max(vmax, vA + vB);
+      vox.push({ i, j, k, vA, vB, a, b, owner: a && b ? (D2(A, i, j, k) <= D2(B, i, j, k) ? 'A' : 'B') : (a ? 'A' : (b ? 'B' : null)) });
+    }
+    for (const v of vox) v.n = (v.a || v.b) ? poisson(r, 0.03 + 30 * (v.vA + v.vB) / vmax) : 0;
+    this.vmax = vmax; this.nmax = Math.max(...vox.map(v => v.n));
+    this.vox = vox;
+    const cv = $('#cv-3d');
+    cv.addEventListener('pointerdown', e => { this.drag = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', e => {
+      if (!this.drag) return;
+      this.yaw += (e.clientX - this.drag[0]) * 0.008; this.pitch = Math.max(-0.2, Math.min(1.3, this.pitch + (e.clientY - this.drag[1]) * 0.006));
+      this.drag = [e.clientX, e.clientY];
+    });
+    cv.addEventListener('pointerup', () => this.drag = null);
+    document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => {
+      this.mode = b.dataset.mode;
+      document.querySelectorAll('[data-mode]').forEach(x => x.classList.toggle('on', x === b));
+    }));
+  },
+  frame(t, dt) {
+    const { g, w, h } = this.S;
+    if (!this.drag) this.yaw += dt * 0.25;
+    g.fillStyle = COL.viewer; g.beginPath(); g.roundRect(0, 0, w, h, 14); g.fill();
+    const { nx, ny, nt } = this;
+    const cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), cp = Math.cos(this.pitch), sp = Math.sin(this.pitch);
+    const S = 15, F = 70, CX = w / 2, CY = h / 2 + 10;
+    const proj = (x, y, z) => {
+      const X = x - nx / 2, Y = y - ny / 2, Z = (z - nt / 2) * 0.55;
+      const x1 = X * cy - Y * sy, y1 = X * sy + Y * cy;
+      const depth = y1 * cp - Z * sp, up = y1 * sp + Z * cp;
+      const p = F / (F + depth);
+      return [CX + x1 * S * p, CY - up * S * p, p];
+    };
+    const A = rgb('accent'), Wm = rgb('warm');
+    g.globalCompositeOperation = 'lighter';
+    for (const v of this.vox) {
+      let col, al, sz;
+      if (this.mode === 'data') {
+        if (!v.n) continue;
+        col = [225, 232, 255]; al = Math.min(1, 0.18 + 0.8 * v.n / this.nmax); sz = 1.8 + 3.2 * Math.sqrt(v.n / this.nmax);
+      } else if (this.mode === 'model') {
+        const tot = v.vA + v.vB; if (tot < 0.012 * this.vmax) continue;
+        col = mix(Wm, A, v.vA / tot); al = 0.95 * Math.pow(tot / this.vmax, 0.75); sz = 1.8 + 3.6 * Math.sqrt(tot / this.vmax);
+      } else {
+        if (!v.owner) continue;
+        col = v.owner === 'A' ? A : Wm; al = v.a && v.b ? 0.42 : 0.10; sz = 2.4;
+      }
+      const [px, py, p] = proj(v.i + .5, v.j + .5, v.k + .5);
+      g.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${al})`;
+      const s = sz * p; g.fillRect(px - s / 2, py - s / 2, s, s);
+    }
+    g.globalCompositeOperation = 'source-over';
+    const boxEdges = (b, color) => {
+      const [[x0, x1], [y0, y1], [z0, z1]] = b, c = [];
+      for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [z0, z1]) c.push(proj(x, y, z));
+      const E = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+      g.strokeStyle = color; g.lineWidth = 1.4; g.beginPath();
+      for (const [a, b2] of E) { g.moveTo(c[a][0], c[a][1]); g.lineTo(c[b2][0], c[b2][1]); }
+      g.stroke();
+    };
+    boxEdges(this.A.box, `rgba(${A[0]},${A[1]},${A[2]},0.8)`);
+    boxEdges(this.B.box, `rgba(${Wm[0]},${Wm[1]},${Wm[2]},0.8)`);
+    const o = proj(0, 0, 0), ax = [[proj(nx, 0, 0), 'x'], [proj(0, ny, 0), 'y'], [proj(0, 0, nt), 'ToF']];
+    g.strokeStyle = 'rgba(200,210,230,0.5)'; g.lineWidth = 1.5;
+    for (const [p, l] of ax) { g.beginPath(); g.moveTo(o[0], o[1]); g.lineTo(p[0], p[1]); g.stroke(); label(g, l, p[0] + 4, p[1] - 4, '#c8d2e6', 16, 600); }
+    const msg = { data: 'Simulated counts: what the fit sees. The data do not say which peak a count belongs to.',
+      model: 'Model: A (blue) and B (orange), each T(t)·G(x,y). Colour mixes by which peak dominates a voxel.',
+      owner: 'Ownership: each voxel is used once, from the shoebox of its owner (bright: shared voxels).' }[this.mode];
+    label(g, msg, 18, h - 18, '#c8d2e6', 17, 500);
+  }
+};
+
+// ---------- 7: broadening by position scatter ----------
+anims.broadening = {
+  init() {
+    this.S = setup($('#cv-broad'));
+    this.r = rng(21); this.delta = 0; this.target = 0; this.next = 0;
+    this.sumS = 0; this.sumB = 0; this.n = 0;
+  },
+  frame(t, dt) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    if (t < this.lastT) this.next = t; this.lastT = t;
+    const sig = 2.5, s = 1.5, sigB = Math.sqrt(sig * sig + s * s);
+    const ratio = (sp, d) => Math.sqrt(2 * sp * sp / (sp * sp + sig * sig)) * Math.exp(-d * d / (2 * (sp * sp + sig * sig)));
+    if (t >= this.next) {
+      this.target = s * gauss(this.r); this.next = t + 1.0;
+      this.sumS += ratio(sig, this.target); this.sumB += ratio(sigB, this.target); this.n++;
+      if (this.n > 400) { this.sumS = this.sumB = this.n = 0; }
+    }
+    this.delta += (this.target - this.delta) * Math.min(1, dt * 8);
+    const d = this.delta, G = (x, m, sd) => Math.exp(-0.5 * ((x - m) / sd) ** 2) / (sd * Math.sqrt(TAU));
+    // top: profiles
+    const x0 = 60, y0 = 16, W = 600, H = 230, X = x => x0 + (x + 12) / 24 * W, Y = v => y0 + H - v / 0.2 * H;
+    axis(g, x0, y0, W, H);
+    const xs = Array.from({ length: 241 }, (_, i) => -12 + i * 0.1);
+    g.fillStyle = rgba('muted', 0.3); lineTo(g, [[X(-12), Y(0)], ...xs.map(x => [X(x), Y(G(x, d, sig))]), [X(12), Y(0)]]); g.fill();
+    g.strokeStyle = COL.accent; g.lineWidth = 2.5; lineTo(g, xs.map(x => [X(x), Y(ratio(sig, d) * G(x, 0, sig))])); g.stroke();
+    g.strokeStyle = COL.warm; lineTo(g, xs.map(x => [X(x), Y(ratio(sigB, d) * G(x, 0, sigB))])); g.stroke();
+    g.setLineDash([5, 5]); g.strokeStyle = COL.muted; g.lineWidth = 1.5; lineTo(g, [[X(0), y0], [X(0), y0 + H]]); g.stroke(); g.setLineDash([]);
+    label(g, 'predicted position', X(0) + 6, y0 + 14, 'muted', 15);
+    label(g, `true peak, offset δ = ${d.toFixed(2)}`, x0 + 8, y0 + 14, 'muted', 15);
+    label(g, 'detector x (px) →', x0 + W - 130, y0 + H + 22, 'muted', 15);
+    // top right: running means
+    const tx = 700;
+    label(g, 'fitted / true, averaged', tx, 36, 'muted', 18);
+    label(g, `over ${this.n} positions`, tx, 58, 'muted', 18);
+    label(g, 'sharp profile (σ)', tx, 102, 'accent', 19, 600);
+    label(g, this.n ? (this.sumS / this.n).toFixed(3) : '—', tx, 144, 'accent', 40, 700);
+    label(g, `expected ${Math.sqrt(2 * sig * sig / (2 * sig * sig + s * s)).toFixed(3)}`, tx + 140, 144, 'muted', 17);
+    label(g, 'broadened (σ′)', tx, 190, 'warm', 19, 600);
+    label(g, this.n ? (this.sumB / this.n).toFixed(3) : '—', tx, 232, 'warm', 40, 700);
+    label(g, 'expected 1.000', tx + 140, 232, 'muted', 17);
+    // bottom: ratio vs delta
+    const by = 310, BH = 230, bx = 60, BW = 860, DX = v => bx + (v + 5) / 10 * BW, DY = v => by + BH - v / 1.25 * BH;
+    axis(g, bx, by, BW, BH);
+    const ds = Array.from({ length: 201 }, (_, i) => -5 + i * 0.05);
+    g.fillStyle = rgba('muted', 0.18); lineTo(g, [[DX(-5), DY(0)], ...ds.map(x => [DX(x), DY(G(x, 0, s) * 3)]), [DX(5), DY(0)]]); g.fill();
+    g.setLineDash([4, 4]); g.strokeStyle = COL.line; lineTo(g, [[bx, DY(1)], [bx + BW, DY(1)]]); g.stroke(); g.setLineDash([]);
+    label(g, '1', bx - 18, DY(1) + 5, 'muted', 15);
+    g.lineWidth = 2.5; g.strokeStyle = COL.accent; lineTo(g, ds.map(x => [DX(x), DY(ratio(sig, x))])); g.stroke();
+    g.strokeStyle = COL.warm; lineTo(g, ds.map(x => [DX(x), DY(ratio(sigB, x))])); g.stroke();
+    for (const [sp, c] of [[sig, 'accent'], [sigB, 'warm']]) { g.fillStyle = COL[c]; g.beginPath(); g.arc(DX(d), DY(ratio(sp, d)), 6, 0, TAU); g.fill(); }
+    label(g, 'fitted / true intensity as a function of the position error δ (px); shaded: distribution of δ, scatter s = 1.5 px', bx, by + BH + 26, 'muted', 16);
+  }
+};
+
+// ---------- 8: conditioning of a pair ----------
+anims.conditioning = {
+  init() {
+    this.S = setup($('#cv-cond'));
+    const r = rng(4); this.zs = Array.from({ length: 350 }, () => [gauss(r), gauss(r)]);
+    this.manual = false;
+    const sl = $('#sep'), au = $('#sep-auto');
+    sl.addEventListener('input', () => { this.manual = true; au.classList.remove('on'); });
+    au.addEventListener('click', () => { this.manual = false; au.classList.add('on'); });
+  },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const sl = $('#sep');
+    let d = this.manual ? +sl.value : 2.5 + 2.5 * Math.cos(t * 0.3);
+    if (!this.manual) sl.value = d;
+    $('#sep-v').textContent = d.toFixed(2);
+    const rho = Math.exp(-d * d / 4), s0 = 50, a1 = 1000, a2 = 600;
+    const sig1 = s0 / Math.sqrt(Math.max(1 - rho * rho, 1e-9));
+    const x0 = 70, y0 = 16, W = 520, H = 480;
+    const X = v => x0 + v / 2000 * W, Y = v => y0 + H - (v + 400) / 2000 * H;
+    axis(g, x0, y0, W, H);
+    label(g, 'â₁ →', x0 + W - 46, y0 + H - 12, 'accent', 20, 700); label(g, '↑ â₂', x0 + 10, y0 + 22, 'warm', 20, 700);
+    label(g, 'true', X(a1) + 10, Y(a2) - 10, 'good', 15, 700);
+    for (const v of [0, 1000, 2000]) label(g, v, X(v) - 10, y0 + H + 22, 'muted', 14);
+    for (const v of [0, 800, 1600]) label(g, v, x0 - 44, Y(v) + 5, 'muted', 14);
+    g.save(); g.beginPath(); g.rect(x0, y0, W, H); g.clip();
+    if (rho > 0.6) { g.setLineDash([6, 6]); g.strokeStyle = rgba('fg', Math.min(1, (rho - 0.6) * 2.5)); g.lineWidth = 1.5; lineTo(g, [[X(-400), Y(2000)], [X(2000), Y(-400)]]); g.stroke(); g.setLineDash([]); }
+    const L = [[sig1, 0], [-rho * sig1, sig1 * Math.sqrt(Math.max(1 - rho * rho, 0))]];
+    g.fillStyle = rgba('fg', 0.55);
+    for (const [z1, z2] of this.zs) {
+      const p1 = a1 + L[0][0] * z1, p2 = a2 + L[1][0] * z1 + L[1][1] * z2;
+      g.fillRect(X(p1) - 1.5, Y(p2) - 1.5, 3, 3);
+    }
+    const sm = sig1 * Math.sqrt(1 - rho), sM = sig1 * Math.sqrt(1 + rho);
+    for (const k of [1, 2]) {
+      g.strokeStyle = rgba('warm', k === 1 ? 0.95 : 0.55); g.lineWidth = 2.5; g.beginPath();
+      for (let i = 0; i <= 120; i++) {
+        const th = i / 120 * TAU, u = k * sm * Math.cos(th), v = k * sM * Math.sin(th);
+        const p1 = a1 + (u - v) / Math.SQRT2, p2 = a2 + (u + v) / Math.SQRT2;
+        i ? g.lineTo(X(p1), Y(p2)) : g.moveTo(X(p1), Y(p2));
+      }
+      g.stroke();
+    }
+    g.restore();
+    g.fillStyle = COL.good; g.beginPath(); g.arc(X(a1), Y(a2), 6, 0, TAU); g.fill();
+    // right: profiles and numbers
+    const px = 650, py = 20, PW = 320, PH = 170, PX = v => px + (v + 6) / 12 * PW, PY = v => py + PH - v * PH;
+    axis(g, px, py, PW, PH);
+    const xs = Array.from({ length: 121 }, (_, i) => -6 + i * 0.1);
+    for (const [c, m] of [['accent', -d / 2], ['warm', d / 2]]) {
+      g.fillStyle = rgba(c, 0.25); lineTo(g, [[PX(-6), PY(0)], ...xs.map(x => [PX(x), PY(0.9 * Math.exp(-0.5 * (x - m) ** 2))]), [PX(6), PY(0)]]); g.fill();
+      g.strokeStyle = COL[c]; g.lineWidth = 2; lineTo(g, xs.map(x => [PX(x), PY(0.9 * Math.exp(-0.5 * (x - m) ** 2))])); g.stroke();
+    }
+    label(g, 'the two profiles', px, py + PH + 22, 'muted', 15);
+    const ty = 260;
+    label(g, `corr(â₁, â₂) = ${(-rho).toFixed(3)}`, px, ty, 'fg', 22, 700);
+    label(g, `σ(â₁) = ${sig1 > 1e5 ? '∞' : sig1.toFixed(0)}  (alone: ${s0})`, px, ty + 36, 'fg', 22, 700);
+    const cond = (1 - rho) / (1 + rho);
+    label(g, `λmin / λmax = ${cond < 1e-4 ? cond.toExponential(1) : cond.toFixed(3)}`, px, ty + 72, 'fg', 22, 700);
+    label(g, 'dots: estimates from repeated', px, ty + 120, 'muted', 16);
+    label(g, 'measurements; ellipses: 1σ, 2σ', px, ty + 140, 'muted', 16);
+    if (d < 0.05) label(g, 'only â₁ + â₂ is measured: refused', px, ty + 190, 'bad', 20, 700);
+    else if (rho > 0.6) label(g, 'dashed: â₁ + â₂ = constant', px, ty + 190, 'muted', 17);
+  }
+};
+
+// ---------- 9: weighting, observed counts vs model ----------
+anims.irls = {
+  init() {
+    this.S = setup($('#cv-irls'));
+    this.r = rng(13); this.N = 80; this.a = 25; this.b = 0.08;
+    const x = Array.from({ length: this.N }, (_, i) => i + 0.5);
+    this.p = normalise(x.map(v => Math.exp(-0.5 * ((v - 40) / 6) ** 2)));
+    this.hn = new Array(30).fill(0); this.hm = new Array(30).fill(0);
+    this.sn = 0; this.sm = 0; this.cnt = 0; this.next = 0; this.show = null;
+  },
+  one() {
+    const { N, a, b, p, r } = this;
+    const n = p.map(v => poisson(r, b + a * v)), d = n.map(v => v - b);
+    const naive = wls([p], d, n.map(v => Math.max(v, 1))).a[0];
+    const trace = []; const model = irls([p], n, b, 4, trace).a[0];
+    return { n, naive, model, trace };
+  },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    if (t < this.lastT) this.next = t; this.lastT = t;
+    for (let k = 0; k < 4; k++) {
+      const o = this.one();
+      const bin = v => Math.max(0, Math.min(29, Math.floor(v / this.a / 0.1)));
+      this.hn[bin(o.naive)]++; this.hm[bin(o.model)]++;
+      this.sn += o.naive / this.a; this.sm += o.model / this.a; this.cnt++;
+      if (t >= this.next) { this.show = o; this.next = t + 1.4; }
+    }
+    if (this.cnt > 8000) { this.hn.fill(0); this.hm.fill(0); this.sn = this.sm = this.cnt = 0; }
+    const o = this.show;
+    // top: one measurement
+    const x0 = 60, y0 = 16, W = 560, H = 190, X = i => x0 + i / this.N * W, Y = v => y0 + H - v / 4 * H;
+    axis(g, x0, y0, W, H);
+    g.fillStyle = rgba('muted', 0.6);
+    for (let i = 0; i < this.N; i++) if (o.n[i]) g.fillRect(X(i) + 1, Y(o.n[i]), W / this.N - 2, y0 + H - Y(o.n[i]));
+    for (const v of [1, 2, 3]) label(g, v, x0 - 18, Y(v) + 5, 'muted', 14);
+    g.setLineDash([5, 4]); g.strokeStyle = COL.fg; g.lineWidth = 1.5; lineTo(g, this.p.map((v, i) => [X(i + .5), Y(this.b + this.a * v)])); g.stroke(); g.setLineDash([]);
+    g.lineWidth = 2.5;
+    g.strokeStyle = COL.bad; lineTo(g, this.p.map((v, i) => [X(i + .5), Y(this.b + o.naive * v)])); g.stroke();
+    g.strokeStyle = COL.good; lineTo(g, this.p.map((v, i) => [X(i + .5), Y(this.b + o.model * v)])); g.stroke();
+    label(g, `one measurement: ${o.n.reduce((s, v) => s + v, 0)} counts in ${this.N} voxels`, x0, y0 + H + 24, 'muted', 16);
+    const tx = 660;
+    label(g, `true a = ${this.a}`, tx, 36, 'fg', 20, 700);
+    label(g, '- - true model', tx + 150, 36, 'muted', 16);
+    label(g, `observed weights: ${o.naive.toFixed(1)}`, tx, 74, 'bad', 20, 700);
+    label(g, `model weights: ${o.model.toFixed(1)}`, tx, 108, 'good', 20, 700);
+    label(g, 'model weights, pass by pass:', tx, 140, 'muted', 15);
+    label(g, o.trace.map(v => v.toFixed(1)).join(' → '), tx, 162, 'muted', 15);
+    // bottom: histograms
+    const by = 270, BH = 260, bx = 60, BW = 880;
+    axis(g, bx, by, BW, BH);
+    const mx = Math.max(...this.hn, ...this.hm, 1), bw = BW / 30;
+    for (let i = 0; i < 30; i++) {
+      g.fillStyle = rgba('bad', 0.45); g.fillRect(bx + i * bw + 1, by + BH - this.hn[i] / mx * BH, bw - 2, this.hn[i] / mx * BH);
+      g.fillStyle = rgba('good', 0.45); g.fillRect(bx + i * bw + 1, by + BH - this.hm[i] / mx * BH, bw - 2, this.hm[i] / mx * BH);
+    }
+    const VX = v => bx + v / 3 * BW;
+    g.setLineDash([5, 5]); g.strokeStyle = COL.fg; g.lineWidth = 1.5; lineTo(g, [[VX(1), by], [VX(1), by + BH]]); g.stroke(); g.setLineDash([]);
+    for (const v of [0, 0.5, 1, 1.5, 2, 2.5]) label(g, v, VX(v) - 8, by + BH + 22, 'muted', 14);
+    label(g, 'estimate / true', bx + BW - 120, by + BH + 44, 'muted', 16);
+    const mn = this.sn / this.cnt, mm = this.sm / this.cnt;
+    for (const [m, c] of [[mn, 'bad'], [mm, 'good']]) { g.strokeStyle = COL[c]; g.lineWidth = 3; lineTo(g, [[VX(m), by], [VX(m), by + BH]]); g.stroke(); }
+    label(g, `observed weights: mean ${mn.toFixed(3)}`, bx + BW - 380, by + 26, 'bad', 20, 700);
+    label(g, `model weights: mean ${mm.toFixed(3)}`, bx + BW - 380, by + 56, 'good', 20, 700);
+    label(g, `${this.cnt} simulated measurements`, bx + BW - 380, by + 84, 'muted', 16);
+  }
+};
+
+// ---------- 10: background shift moves both intensities ----------
+anims.bgshift = {
+  init() {
+    this.S = setup($('#cv-bg'));
+    const r = rng(17), T = 50, tt = Array.from({ length: T }, (_, i) => i + 0.5);
+    this.P1 = normalise(tt.map(x => ibix(x, 18, 0.9, 0.25, 1.2)));
+    this.P2 = normalise(tt.map(x => ibix(x, 25, 0.9, 0.25, 1.2)));
+    this.bg = 10; this.T = T;
+    this.n = tt.map((_, i) => poisson(r, this.bg + 900 * this.P1[i] + 500 * this.P2[i]));
+    this.f0 = irls([this.P1, this.P2], this.n, this.bg);
+  },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const dB = 1.6 * Math.sin(t * 1.1), b = this.bg + dB;
+    const f = irls([this.P1, this.P2], this.n, b);
+    const x0 = 50, y0 = 16, W = 480, H = 380, T = this.T, ym = Math.max(...this.n) * 1.1;
+    const X = i => x0 + i / T * W, Y = v => y0 + H - v / ym * H;
+    axis(g, x0, y0, W, H);
+    g.fillStyle = rgba('muted', 0.45);
+    for (let i = 0; i < T; i++) g.fillRect(X(i) + 1, Y(this.n[i]), W / T - 2, y0 + H - Y(this.n[i]));
+    for (const [P, a, c] of [[this.P1, f.a[0], 'accent'], [this.P2, f.a[1], 'warm']]) {
+      g.strokeStyle = COL[c]; g.lineWidth = 2.5; lineTo(g, P.map((v, i) => [X(i + .5), Y(b + a * v)])); g.stroke();
+    }
+    g.strokeStyle = COL.fg; g.lineWidth = 2; g.setLineDash([6, 4]); lineTo(g, [[x0, Y(b)], [x0 + W, Y(b)]]); g.stroke(); g.setLineDash([]);
+    label(g, `background ${dB >= 0 ? '+' : '−'}${Math.abs(dB).toFixed(2)}`, x0 + W - 170, Y(b) - 8, 'fg', 16, 600);
+    // bars of the change
+    const bx = 600, base = y0 + H / 2, sc = 3.2;
+    label(g, 'change in fitted intensity', bx - 30, y0 + 16, 'muted', 16);
+    g.strokeStyle = COL.line; lineTo(g, [[bx - 20, base], [bx + 170, base]]); g.stroke();
+    [[f.a[0] - this.f0.a[0], 'accent', 'â₁'], [f.a[1] - this.f0.a[1], 'warm', 'â₂']].forEach(([dv, c, l], k) => {
+      const X0 = bx + k * 90, hgt = -dv / sc;
+      g.fillStyle = COL[c]; g.fillRect(X0, Math.min(base, base + hgt), 60, Math.abs(hgt));
+      label(g, l, X0 + 18, y0 + H - 4, c, 20, 700);
+      label(g, (dv >= 0 ? '+' : '−') + Math.abs(dv).toFixed(0), X0 + 8, base + (hgt > 0 ? hgt + 22 : hgt - 8), c, 17, 700);
+    });
+  }
+};
+
+// ---------- 11: box normalisation ----------
+anims.boxnorm = {
+  init() {
+    this.S = setup($('#cv-box'));
+    this.tt = Array.from({ length: 800 }, (_, i) => i * 0.1);
+    this.P = this.tt.map(x => ibix(x, 28, 0.6, 0.15, 1.5));
+    this.tot = this.P.reduce((s, v) => s + v, 0);
+  },
+  frame(t) {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const L = 18, R = 40.5 + 12.5 * Math.cos(t * 0.45);
+    const x0 = 50, y0 = 20, W = 900, H = 330, pmax = Math.max(...this.P);
+    const X = v => x0 + v / 80 * W, Y = v => y0 + H - v / pmax * H * 0.92;
+    axis(g, x0, y0, W, H);
+    let inside = 0; for (let i = 0; i < this.tt.length; i++) if (this.tt[i] >= L && this.tt[i] < R) inside += this.P[i];
+    const f = inside / this.tot;
+    g.fillStyle = rgba('accent', 0.08); g.fillRect(X(L), y0, X(R) - X(L), H);
+    const pts = this.tt.map((x, i) => [X(x), Y(this.P[i])]);
+    g.fillStyle = rgba('accent', 0.35);
+    lineTo(g, [[X(L), Y(0)], ...pts.filter((_, i) => this.tt[i] >= L && this.tt[i] < R), [X(R), Y(0)]]); g.fill();
+    g.strokeStyle = COL.muted; g.lineWidth = 2; g.setLineDash([5, 5]); lineTo(g, pts); g.stroke(); g.setLineDash([]);
+    g.strokeStyle = COL.accent; g.lineWidth = 3; lineTo(g, pts.filter((_, i) => this.tt[i] >= L && this.tt[i] < R)); g.stroke();
+    g.strokeStyle = COL.fg; g.lineWidth = 2; for (const e of [L, R]) lineTo(g, [[X(e), y0], [X(e), y0 + H]]), g.stroke();
+    label(g, 'box', X(L) + 6, y0 + 18, 'fg', 16, 700);
+    label(g, 'model tail outside the box', X(Math.min(R, 60)) + 8, Y(pmax * 0.25), 'muted', 16);
+    label(g, 'ToF →', x0 + W - 50, y0 + H + 22, 'muted', 16);
+    const by = y0 + H + 62;
+    label(g, `fraction inside f = ${f.toFixed(2)}`, x0, by, 'accent', 24, 700);
+    label(g, `whole-peak estimate = box estimate × ${(1 / f).toFixed(2)}`, x0 + 330, by, 'warm', 24, 700);
+    label(g, `a 10% error in the tail model → ${(10 * (1 - f) / f).toFixed(1)}% error in a`, x0 + 330, by + 34, 'warm', 18, 600);
+  }
+};
+
+// ---------- 12: weak reflections, signed vs non-negative estimator ----------
+anims.weak = {
+  init() {
+    this.S = setup($('#cv-weak'));
+    this.r = rng(31); this.hu = new Array(40).fill(0); this.hp = new Array(40).fill(0); this.su = 0; this.sp = 0; this.n = 0;
+  },
+  frame() {
+    const { g, w, h } = this.S; g.clearRect(0, 0, w, h);
+    const mu = 0.5;
+    for (let k = 0; k < 20; k++) {
+      const x = mu + gauss(this.r), y = Math.max(0, x);
+      const bin = v => Math.max(0, Math.min(39, Math.floor((v + 3) / 0.2)));
+      this.hu[bin(x)]++; this.hp[bin(y)]++; this.su += x; this.sp += y; this.n++;
+    }
+    if (this.n > 60000) { this.hu.fill(0); this.hp.fill(0); this.su = this.sp = this.n = 0; }
+    const x0 = 40, y0 = 70, W = 680, H = 300, bw = W / 40, mx = Math.max(...this.hu.slice(0, 14), ...this.hu.slice(16), ...this.hp.slice(16), 1) * 1.1;
+    axis(g, x0, y0, W, H);
+    const V = v => x0 + (v + 3) / 8 * W;
+    for (let i = 0; i < 40; i++) {
+      g.fillStyle = rgba('accent', 0.45); g.fillRect(x0 + i * bw + 1, y0 + H - Math.min(H, this.hu[i] / mx * H), bw - 2, Math.min(H, this.hu[i] / mx * H));
+      g.fillStyle = rgba('warm', 0.45); g.fillRect(x0 + i * bw + 1, y0 + H - Math.min(H, this.hp[i] / mx * H), bw - 2, Math.min(H, this.hp[i] / mx * H));
+    }
+    label(g, '↑ all the negative ones pile up at 0', V(0) + 8, y0 + 18, 'warm', 16, 600);
+    for (const v of [-2, 0, 2, 4]) label(g, v, V(v) - 6, y0 + H + 22, 'muted', 14);
+    label(g, 'estimate / σ →', x0 + W - 110, y0 + H - 10, 'muted', 15);
+    g.setLineDash([5, 5]); g.strokeStyle = COL.fg; lineTo(g, [[V(mu), y0], [V(mu), y0 + H]]); g.stroke(); g.setLineDash([]);
+    const mu_ = this.su / this.n, mp = this.sp / this.n;
+    label(g, `can go negative: mean ${mu_.toFixed(2)} (true ${mu})`, x0, 28, 'accent', 20, 700);
+    label(g, `cannot: mean ${mp.toFixed(2)} → reads ${(mp / mu).toFixed(1)}× high`, x0, 56, 'warm', 20, 700);
+  }
+};
+
+// ---------- loop ----------
+readColors();
+fit();
+show(Math.max(0, (parseInt(location.hash.slice(1)) || 1) - 1));
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (!paused) tSlide += dt;
+  const names = (slides[cur].dataset.anim || '').split(' ').filter(Boolean);
+  for (const n of names) {
+    const a = anims[n];
+    if (!a._init) { a.init(); a._init = true; }
+    a.frame(tSlide, paused ? 0 : dt);
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
