@@ -1,0 +1,7 @@
+{%- assign list = include.authors -%}
+{%- if list.size <= 12 -%}
+{%- for a in list -%}{%- if a contains "Finke" -%}<strong>{{ a }}</strong>{%- else -%}{{ a }}{%- endif -%}{%- unless forloop.last -%}, {% endunless -%}{%- endfor -%}
+{%- else -%}
+{%- for a in list limit: 3 -%}{%- if a contains "Finke" -%}<strong>{{ a }}</strong>{%- else -%}{{ a }}{%- endif -%}, {% endfor -%}
+{%- for a in list offset: 3 -%}{%- if a contains "Finke" -%}…, <strong>{{ a }}</strong>, {% endif -%}{%- endfor -%}et al.
+{%- endif -%}

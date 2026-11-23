@@ -1,6 +1,8 @@
 ---
 layout: default
 ---
-
-<h1>{{ page.title | escape }}</h1>
-{{ content }}
+<article class="page">
+  <h1 class="page-title">{{ page.title | escape }}</h1>
+  {% if page.lead %}<p class="lead">{{ page.lead }}</p>{% endif %}
+  {{ content }}
+</article>

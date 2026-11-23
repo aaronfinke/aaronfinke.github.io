@@ -1,16 +1,28 @@
-title: Aaron's notes
-description: Notes I take that might be useful to others.
-# For a user site (yourusername.github.io) leave baseurl empty.
-# For a project site, set it to "/repo-name".
+title: Aaron D. Finke
+tagline: Instrument Data Scientist · European Spallation Source
+description: Personal website of Aaron D. Finke — neutron and X-ray macromolecular crystallography, instrument data science, publications, CV and notes.
 baseurl: ""
 url: "https://aaronfinke.github.io"
 
-remote_theme: pages-themes/midnight@v0.2.0
+# Contact / profile links (shown in footer and on the home page)
+# Not under `author:` on purpose: jekyll-feed would publish author.email in plain text in feed.xml.
+# Rendered on the site only via _includes/email.html (obfuscated, assembled by JS on click).
+contact_email: aaronfinke@ess.eu
+
+author:
+  name: Aaron D. Finke
+  orcid: 0000-0002-6842-1122
+  github: aaronfinke
+  affiliation: Data Management and Scientific Computing, European Spallation Source
+  location: Lyngby, Denmark
+
+# Put a square-ish portrait in assets/images/ and set the filename here, e.g. profile.jpg
+photo: ""
+
+markdown: kramdown
 plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
-- jekyll-feed
+  - jekyll-feed
 
-
-# Show the "about" page in the header nav
-header_pages:
-  - about.md
+exclude:
+  - scripts
+  - README.md

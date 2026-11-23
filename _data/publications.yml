@@ -1,0 +1,850 @@
+- key: Neutze2026ba3
+  type: misc
+  year: 2026
+  title: Structural mechanism of proton pumping by ba<sub>3</sub>-type cytochrome <em>c</em> oxidase
+  authors:
+  - R. Neutze
+  - J. Johannesson
+  - D. Zorić
+  - A. Vallejos
+  - A. Kabbinale
+  - E. Sandelin
+  - J. Glerup
+  - S. Ghosh
+  - A. Finke
+  - M. Bjelčić
+  - J. Rönnholm
+  - L. Ostojić
+  - P. Dahl
+  - E. Beale
+  - C. Cirelli
+  - F. Dworkowski
+  - C. Bacellar
+  - P. Johnson
+  - D. Ozerov
+  - A. Batyuk
+  - S. Boutet
+  - G. Gate
+  - C. Kupitz
+  - A. Peck
+  - F. Poitevin
+  - R. Sierra
+  - S. Lisova
+  - C. Wallentin
+  - G. Brändén
+  venue: Preprint, Research Square
+  doi: 10.21203/rs.3.rs-9295287/v1
+  url: https://www.researchsquare.com/article/rs-9295287/v1
+  note: Version 1, under review; not peer reviewed
+  preprint: true
+- key: Bertelsen2026NMX
+  type: article
+  year: 2026
+  title: 'Simulating Neutron Protein Crystallography Experiments: Applications to the Development of the NMX Instrument at ESS'
+  authors:
+  - M. Bertelsen
+  - P. K. Willendrup
+  - S. Yoo
+  - A. Meligrana
+  - D. McDonagh
+  - J. Bergmann
+  - E. Oksanen
+  - A. D. Finke
+  venue: 'Acta Crystallographica Section D: Structural Biology'
+  volume: '82'
+  pages: 751–760
+  doi: 10.1107/S205979832600584X
+  note: 'bioRxiv preprint: 10.64898/2026.03.26.714568v2'
+  preprint: false
+- key: Pfeiffer2026Gd
+  type: article
+  year: 2026
+  title: Measurements of enriched <sup>155</sup>Gd and <sup>157</sup>Gd converters with the NMX detector on the n<sub>TOF</sub> EAR2 beam line at CERN
+  authors:
+  - D. Pfeiffer
+  - F. M. Brunbauer
+  - I. R. Fehse
+  - A. D. Finke
+  - K. Fissum
+  - K. J. Floethner
+  - D. Janssens
+  - M. Lisowska
+  - H. Muller
+  - E. Oksanen
+  - E. Oliveri
+  - L. Ropelewski
+  - A. Rusu
+  - J. Samarati
+  - L. Scharenberg
+  - M. van Stenis
+  - R. Veenhof
+  - N. Zavaritskaya
+  venue: Journal of Instrumentation
+  volume: '21'
+  pages: P02011
+  doi: 10.1088/1748-0221/21/02/P02011
+  preprint: false
+- key: Aggarwal2025ESS
+  type: article
+  year: 2025
+  title: Integrated Structural Biology at the European Spallation Source
+  authors:
+  - S. Aggarwal
+  - J. Bergmann
+  - A. Finke
+  - D. Lundstrom
+  - G. Aprigliano
+  - E. Oksanen
+  venue: European Biophysics Journal
+  volume: '54'
+  pages: S237
+  preprint: false
+- key: Guerrero2024STEP
+  type: article
+  year: 2024
+  title: 'Pushed to extremes: distinct effects of high temperature versus pressure on the structure of STEP'
+  authors:
+  - L. Guerrero
+  - A. Ebrahim
+  - B. T. Riley
+  - M. Kim
+  - Q. Huang
+  - A. D. Finke
+  - D. A. Keedy
+  venue: Communications Biology
+  volume: '7'
+  pages: '59'
+  doi: 10.1038/s42003-023-05609-0
+  preprint: false
+- key: Mertens2022HDM2
+  type: article
+  year: 2022
+  title: 'Elucidation of a nutlin-derivative–HDM2 complex structure at the interaction site by NMR molecular replacement: A straightforward derivation'
+  authors:
+  - V. Mertens
+  - M. J. A. Saad
+  - N. Coudevylle
+  - M. A. Wälti
+  - A. Finke
+  - M. Marsh
+  - J. Orts
+  venue: Journal of Magnetic Resonance Open
+  volume: 10–11
+  pages: '100032'
+  doi: 10.1016/j.jmro.2022.100032
+  preprint: false
+- key: Milano2022GAC
+  type: article
+  year: 2022
+  title: New insights into the molecular mechanisms of glutaminase C inhibitors in cancer cells using serial room temperature crystallography
+  authors:
+  - S. K. Milano
+  - Q. Huang
+  - T. T. Nguyen
+  - S. Ramachandran
+  - A. D. Finke
+  - I. Kriksunov
+  - D. Schuller
+  - D. M. Szebenyi
+  - E. Arenholz
+  - L. A. McDermott
+  - N. Sukumar
+  - R. A. Cerione
+  - W. P. Katt
+  venue: Journal of Biological Chemistry
+  volume: '298'
+  pages: '101535'
+  doi: 10.1016/j.jbc.2021.101535
+  preprint: false
+- key: Pedrini2022Er13
+  type: article
+  year: 2022
+  title: Crystal structure of the pheromone Er-13 from the ciliate <em>Euplotes raikovi</em>, with implications for a protein–protein association model in pheromone/receptor interactions
+  authors:
+  - B. Pedrini
+  - A. D. Finke
+  - M. Marsh
+  - M. Luporini
+  - A. Vallesi
+  - C. Alimenti
+  venue: Journal of Structural Biology
+  volume: '214'
+  pages: '107812'
+  doi: 10.1016/j.jsb.2021.107812
+  preprint: false
+- key: Illava2021Sample
+  type: article
+  year: 2021
+  title: Integrated Sample Handling and Mounting System for Serial Synchrotron Crystallography
+  authors:
+  - G. Illava
+  - R. Jayne
+  - A. D. Finke
+  - D. Closs
+  - W. Zeng
+  - S. K. Milano
+  - Q. Huang
+  - I. Kriksunov
+  - P. Sidorenko
+  - F. W. Wise
+  - W. R. Zipfel
+  - B. A. Apker
+  - R. E. Thorne
+  venue: 'Acta Crystallographica Section D: Structural Biology'
+  volume: '77'
+  pages: 628–644
+  doi: 10.1107/S2059798321001868
+  preprint: false
+- key: Basu2019NativeSAD
+  type: article
+  year: 2019
+  title: 'Making Routine Native SAD a Reality: Lessons from Beamline X06DA at the Swiss Light Source'
+  authors:
+  - S. Basu
+  - A. Finke
+  - L. Vera
+  - V. Wang
+  - V. Olieric
+  venue: 'Acta Crystallographica Section D: Structural Biology'
+  volume: '75'
+  pages: 262–271
+  doi: 10.1107/S2059798319003103
+  preprint: false
+- key: Wierman2019FixedTarget
+  type: article
+  year: 2019
+  title: Fixed-Target Serial Oscillation Crystallography at Room Temperature
+  authors:
+  - J. L. Wierman
+  - O. Paré-Labrosse
+  - A. Sarracini
+  - J. E. Besaw
+  - M. J. Cook
+  - S. Oghbaey
+  - H. Daoud
+  - P. Mehrabi
+  - I. Kriksunov
+  - A. Kuo
+  - D. J. Schuller
+  - S. Smith
+  - O. P. Ernst
+  - D. M. E. Szebenyi
+  - S. M. Gruner
+  - R. J. D. Miller
+  - A. D. Finke
+  venue: IUCrJ
+  volume: '6'
+  pages: 305–316
+  doi: 10.1107/S2052252519001453
+  preprint: false
+- key: Finke2018ChargeTransfer
+  type: article
+  year: 2018
+  title: 'Charge-Transfer Salts of 6,6-Dicyanopentafulvenes: From Topology to Charge Separation in Solution'
+  authors:
+  - A. D. Finke
+  - M. Zalibera
+  - D. Confortin
+  - A. M. Kelterer
+  - C. Mensing
+  - S. Haberland
+  - F. Diederich
+  - G. Gescheidt
+  venue: Chemistry – A European Journal
+  volume: '24'
+  pages: 13616–13623
+  doi: 10.1002/chem.201802486
+  preprint: false
+- key: Trolez2018Rotaxane
+  type: article
+  year: 2018
+  title: 'Unconventional Synthesis of a Cu(I) Rotaxane with a Superacceptor Stopper: Ultrafast Excited-State Dynamics and Near-Infrared Luminescence'
+  authors:
+  - Y. Trolez
+  - A. D. Finke
+  - F. Silvestri
+  - F. Monti
+  - B. Ventura
+  - C. Boudon
+  - J.-P. Gisselbrecht
+  - B. Schweizer
+  - J.-P. Sauvage
+  - N. Armaroli
+  - F. Diederich
+  venue: Chemistry – A European Journal
+  volume: '24'
+  pages: 10422–10433
+  doi: 10.1002/chem.201801161
+  preprint: false
+- key: Haberland2018Protonation
+  type: article
+  year: 2018
+  title: Enhancement of Push–Pull Properties of Pentafulvene and Pentafulvalene Derivatives by Protonation at Carbon
+  authors:
+  - S. Haberland
+  - A. D. Finke
+  - N. Kerisit
+  - C. Katan
+  - Y. Trolez
+  - P. Gawel
+  - I. Leito
+  - M. Lõkov
+  - R. Järviste
+  - K. Kaupmees
+  - N. Trapp
+  - L. Ruhlmann
+  - C. Boudon
+  - D. Himmel
+  - F. Diederich
+  venue: European Journal of Organic Chemistry
+  volume: '2018'
+  pages: 739–749
+  doi: 10.1002/ejoc.201800039
+  preprint: false
+- key: Rhodes2017MoTe2
+  type: article
+  year: 2017
+  title: Bulk Fermi surface of the Weyl type-II semimetallic candidate γ-MoTe<sub>2</sub>
+  authors:
+  - D. Rhodes
+  - R. Schönemann
+  - N. Aryal
+  - Q. Zhou
+  - Q. R. Zhang
+  - E. Kampert
+  - Y.-C. Chiu
+  - Y. Lai
+  - Y. Shimura
+  - G. T. McCandless
+  - J. Y. Chan
+  - D. W. Paley
+  - J. Lee
+  - A. D. Finke
+  - J. P. C. Ruff
+  - S. Das
+  - E. Manousakis
+  - L. Balicas
+  venue: Physical Review B
+  volume: '96'
+  pages: '165134'
+  doi: 10.1103/PhysRevB.96.165134
+  note: Editors' Suggestion
+  preprint: false
+- key: Sumy2016Reductive
+  type: article
+  year: 2016
+  title: The Reductive Aromatization of Tridecacyclene
+  authors:
+  - D. P. Sumy
+  - A. D. Finke
+  - A. C. Whalley
+  venue: Chemical Communications
+  volume: '52'
+  pages: 12368–12371
+  doi: 10.1039/C6CC06078A
+  preprint: false
+- key: Lampart2016Pentaindeno
+  type: article
+  year: 2016
+  title: 'Pentaindenocorannulene: Properties, Assemblies, and C<sub>60</sub> Complex'
+  authors:
+  - S. Lampart
+  - L. M. Roch
+  - A. K. Dutta
+  - Y. Wang
+  - R. Warshamanage
+  - A. D. Finke
+  - A. Linden
+  - K. K. Baldridge
+  - J. S. Siegel
+  venue: Angewandte Chemie International Edition
+  volume: '55'
+  pages: 14648–14652
+  doi: 10.1002/anie.201608337
+  preprint: false
+- key: Casanas2016EIGER
+  type: article
+  year: 2016
+  title: 'EIGER Detector: Application in Macromolecular Crystallography'
+  authors:
+  - A. Casanas
+  - R. Warshamanage
+  - A. D. Finke
+  - E. Panepucci
+  - V. Olieric
+  - A. Nöll
+  - R. Tampé
+  - S. Brandstetter
+  - A. Förster
+  - M. Mueller
+  - C. Schulze-Briese
+  - O. Bunk
+  - M. Wang
+  venue: 'Acta Crystallographica Section D: Structural Biology'
+  volume: '72'
+  pages: 1036–1048
+  doi: 10.1107/S2059798316012304
+  preprint: false
+- key: Jayamurugan2016Aviram
+  type: article
+  year: 2016
+  title: Design and Synthesis of Aviram–Ratner-Type Dyads and Rectification Studies in Langmuir–Blodgett (LB) Films
+  authors:
+  - G. Jayamurugan
+  - V. Gowri
+  - D. Hernández
+  - S. Martin
+  - A. González-Orive
+  - C. Dengiz
+  - O. Dumele
+  - F. Pérez-Murano
+  - J.-P. Gisselbrecht
+  - C. Boudon
+  - W. B. Schweizer
+  - B. Breiten
+  - A. D. Finke
+  - G. Jeschke
+  - B. Bernet
+  - L. Ruhlmann
+  - P. Cea
+  - F. Diederich
+  venue: Chemistry – A European Journal
+  volume: '22'
+  pages: 10539–10547
+  doi: 10.1002/chem.201505216
+  preprint: false
+- key: Olieric2016NativeSAD
+  type: article
+  year: 2016
+  title: Data Collection Strategy for Challenging Native SAD Phasing
+  authors:
+  - V. Olieric
+  - T. Weinert
+  - A. D. Finke
+  - C. Anders
+  - D. Li
+  - N. Olieric
+  - C. N. Borca
+  - M. O. Steinmetz
+  - M. Caffrey
+  - M. Jinek
+  - M. Wang
+  venue: 'Acta Crystallographica Section D: Structural Biology'
+  volume: '72'
+  pages: 421–429
+  doi: 10.1107/S2059798315024110
+  preprint: false
+- key: Sumy2016Tridecacyclene
+  type: article
+  year: 2016
+  title: 'Tridecacyclene: A Cyclic Tetramer of Acenaphthylene'
+  authors:
+  - D. P. Sumy
+  - N. J. Dodge
+  - C. M. Harrison
+  - A. D. Finke
+  - A. C. Whalley
+  venue: Chemistry – A European Journal
+  volume: '22'
+  pages: 4709–4712
+  doi: 10.1002/chem.201600165
+  preprint: false
+- key: Finke2016ZnCl2
+  type: article
+  year: 2016
+  title: Crystal Structures of Three Complexes of Zinc Chloride with Tri-<em>tert</em>-butylphosphane
+  authors:
+  - A. D. Finke
+  - D. L. Gray
+  - J. S. Moore
+  venue: 'Acta Crystallographica Section E: Crystallographic Communications'
+  volume: '72'
+  pages: 35–39
+  doi: 10.1107/S2056989015023373
+  preprint: false
+- key: Chatterjee2016Suzukiase
+  type: article
+  year: 2016
+  title: An Enantioselective Artificial Suzukiase Based on the Biotin–Streptavidin Technology
+  authors:
+  - A. Chatterjee
+  - H. Mallin
+  - J. Klehr
+  - J. Vallapurackal
+  - A. D. Finke
+  - L. Vera
+  - M. Marsh
+  - T. R. Ward
+  venue: Chemical Science
+  volume: '7'
+  pages: 673–677
+  doi: 10.1039/C5SC03116H
+  preprint: false
+- key: Finke2016Phasing
+  type: article
+  year: 2016
+  title: Advanced Crystallographic Data Collection Protocols for Experimental Phasing
+  authors:
+  - A. D. Finke
+  - E. Panepucci
+  - C. Vonrhein
+  - M. Wang
+  - G. Bricogne
+  - V. Olieric
+  venue: Methods in Molecular Biology
+  volume: '1320'
+  pages: 175–191
+  doi: 10.1007/978-1-4939-2763-0_11
+  preprint: false
+- key: Bheemireddy2016Contorted
+  type: article
+  year: 2016
+  title: Contorted Aromatics via a Palladium-Catalyzed Cyclopentannulation Strategy
+  authors:
+  - S. R. Bheemireddy
+  - P. C. Ubaldo
+  - A. D. Finke
+  - L. Wang
+  - K. N. Plunkett
+  venue: Journal of Materials Chemistry C
+  volume: '4'
+  pages: 3963–3969
+  doi: 10.1039/C5TC02305J
+  preprint: false
+- key: Bheemireddy2015Pentacene
+  type: article
+  year: 2015
+  title: Stabilizing Pentacene By Cyclopentannulation
+  authors:
+  - S. R. Bheemireddy
+  - P. C. Ubaldo
+  - P. W. Rose
+  - A. D. Finke
+  - J. Zhuang
+  - L. Wang
+  - K. N. Plunkett
+  venue: Angewandte Chemie International Edition
+  volume: '54'
+  pages: 15762–15766
+  doi: 10.1002/anie.201508650
+  preprint: false
+- key: Monti2015Anilino
+  type: article
+  year: 2015
+  title: 'Anilino-substituted Multicyanobuta-1,3-diene Electron Acceptors: TICT Molecules with Accessible Conical Intersections'
+  authors:
+  - F. Monti
+  - A. Venturini
+  - A. Nenov
+  - F. Tancini
+  - A. D. Finke
+  - F. Diederich
+  - N. Armaroli
+  venue: The Journal of Physical Chemistry A
+  volume: '119'
+  pages: 10677–10683
+  doi: 10.1021/acs.jpca.5b09291
+  preprint: false
+- key: Donckele2015Indandione
+  type: article
+  year: 2015
+  title: 'The [2 + 2] Cycloaddition–Retroelectrocyclization and [4 + 2] Hetero-Diels–Alder Reactions of 2-(Dicyanomethylene)indan-1,3-dione with Electron-Rich Alkynes: Influence of Lewis Acids on Reactivity'
+  authors:
+  - E. J. Donckele
+  - A. D. Finke
+  - L. Ruhlmann
+  - C. Boudon
+  - N. Trapp
+  - F. Diederich
+  venue: Organic Letters
+  volume: '17'
+  pages: 3506–3509
+  doi: 10.1021/acs.orglett.5b01598
+  preprint: false
+- key: Finke2015DCPF
+  type: article
+  year: 2015
+  title: 'The 6,6-Dicyanopentafulvene Core: A Template for the Design of Electron Acceptor Compounds'
+  authors:
+  - A. D. Finke
+  - B. O. Jahn
+  - A. Saithalavi
+  - C. Dahlstrand
+  - D. Nauroozi
+  - S. Haberland
+  - J.-P. Gisselbrecht
+  - C. Boudon
+  - E. Mijangos
+  - W. B. Schweizer
+  - S. Ott
+  - H. Ottosson
+  - F. Diederich
+  venue: Chemistry – A European Journal
+  volume: '21'
+  pages: 8168–8176
+  doi: 10.1002/chem.201500379
+  preprint: false
+- key: Kerisit2015Pentafulvenes
+  type: article
+  year: 2015
+  title: 'New Reactivity of 6,6-Bis-Donor-Substituted Pentafulvenes: One-Step Synthesis of Highly Substituted [3]Cumulene and Dihydropentalene'
+  authors:
+  - N. Kerisit
+  - A. D. Finke
+  - N. Trapp
+  - Y. Leroux
+  - J.-C. Guillemin
+  - Y. Trolez
+  - F. Diederich
+  venue: Tetrahedron
+  volume: '71'
+  pages: 4393–4399
+  doi: 10.1016/j.tet.2015.03.081
+  preprint: false
+- key: Gawel2015Trienes
+  type: article
+  year: 2015
+  title: 'Push–Pull Buta-1,2,3-trienes: Exceptionally Low Rotational Barriers of Cumulenic C=C Bonds and Proacetylenic Reactivity'
+  authors:
+  - P. Gawel
+  - Y.-L. Wu
+  - A. D. Finke
+  - N. Trapp
+  - M. Zalibera
+  - C. Boudon
+  - J.-P. Gisselbrecht
+  - W. B. Schweizer
+  - G. Gescheidt
+  - F. Diederich
+  venue: Chemistry – A European Journal
+  volume: '21'
+  pages: 6215–6225
+  doi: 10.1002/chem.201406583
+  preprint: false
+- key: Finke2015OldDog
+  type: article
+  year: 2015
+  title: '6,6-Dicyanopentafulvenes: Teaching an Old Dog New Tricks'
+  authors:
+  - A. D. Finke
+  - F. Diederich
+  venue: The Chemical Record
+  volume: '15'
+  pages: 19–30
+  doi: 10.1002/tcr.201402060
+  preprint: false
+- key: Covey2014AllOptical
+  type: article
+  year: 2014
+  title: All-Optical Switching with 1-ps Response Time in a DDMEBT Enabled Silicon Grating Coupler/Resonator Hybrid Device
+  authors:
+  - J. Covey
+  - A. D. Finke
+  - X. Xu
+  - W. Wu
+  - Y. Wang
+  - F. Diederich
+  - R. T. Chen
+  venue: Optics Express
+  volume: '22'
+  pages: 24530–24544
+  doi: 10.1364/OE.22.024530
+  preprint: false
+- key: Gawel2014Tetracenes
+  type: article
+  year: 2014
+  title: Synthesis of Cyano-Substituted Diaryltetracenes from Tetraaryl[3]cumulenes
+  authors:
+  - P. Gawel
+  - C. Dengiz
+  - A. D. Finke
+  - N. Trapp
+  - C. Boudon
+  - J.-P. Gisselbrecht
+  - F. Diederich
+  venue: Angewandte Chemie International Edition
+  volume: '53'
+  pages: 4341–4345
+  doi: 10.1002/anie.201402299
+  note: Highlight in SYNFACTS 2014, 587
+  preprint: false
+- key: Jayamurugan2014Oligoenes
+  type: article
+  year: 2014
+  title: One-Pot Access to Push–Pull Oligoenes by Sequential [2+2] Cycloaddition–Retroelectrocyclization Reactions
+  authors:
+  - G. Jayamurugan
+  - A. D. Finke
+  - J.-P. Gisselbrecht
+  - C. Boudon
+  - W. B. Schweizer
+  - F. Diederich
+  venue: The Journal of Organic Chemistry
+  volume: '79'
+  pages: 426–431
+  doi: 10.1021/jo402440m
+  preprint: false
+- key: Finke2013Rearrangement
+  type: article
+  year: 2013
+  title: A Mild, Thermal Pentafulvene-to-Benzene Rearrangement
+  authors:
+  - A. D. Finke
+  - S. Haberland
+  - W. B. Schweizer
+  - P. Chen
+  - F. Diederich
+  venue: Angewandte Chemie International Edition
+  volume: '52'
+  pages: 9827–9830
+  doi: 10.1002/anie.201304767
+  note: 'German edition: Angew. Chem. 2013, 125, 10010–10013, doi:10.1002/ange.201304767'
+  preprint: false
+- key: Finke2012DCPF
+  type: article
+  year: 2012
+  title: '6,6-Dicyanopentafulvenes: Electronic Structure and Regioselectivity in [2+2] Cycloaddition–Retroelectrocyclization Reactions'
+  authors:
+  - A. D. Finke
+  - O. Dumele
+  - M. Zalibera
+  - D. Confortin
+  - P. Cias
+  - G. Jayamurugan
+  - J.-P. Gisselbrecht
+  - C. Boudon
+  - W. B. Schweizer
+  - G. Gescheidt
+  - F. Diederich
+  venue: Journal of the American Chemical Society
+  volume: '134'
+  pages: 18139–18146
+  doi: 10.1021/ja309141r
+  preprint: false
+- key: Wood2012Acceptors
+  type: article
+  year: 2012
+  title: Electron Acceptors Based on Functionalizable Cyclopenta[hi]aceanthrylenes and Dicyclopenta[de,mn]tetracenes
+  authors:
+  - J. D. Wood
+  - J. L. Jellison
+  - A. D. Finke
+  - L. Wang
+  - K. N. Plunkett
+  venue: Journal of the American Chemical Society
+  volume: '134'
+  pages: 15783–15789
+  doi: 10.1021/ja304602t
+  preprint: false
+- key: Finke2012ADIMET
+  type: incollection
+  year: 2012
+  title: Alkyne Metathesis Polymerization (ADIMET) and Macrocyclization (ADIMAC)
+  authors:
+  - A. D. Finke
+  - J. S. Moore
+  venue: Synthesis of Polymers
+  volume: '1'
+  pages: 135–155
+  doi: 10.1002/9783527603978.mst0416
+  preprint: false
+  publisher: Wiley-VCH
+- key: Finke2011Carbazole
+  type: article
+  year: 2011
+  title: Engineering Solid-State Morphologies in Carbazole–Ethynylene Macrocycles
+  authors:
+  - A. D. Finke
+  - D. E. Gross
+  - A. Han
+  - J. S. Moore
+  venue: Journal of the American Chemical Society
+  volume: '133'
+  pages: 14063–14070
+  doi: 10.1021/ja204795q
+  preprint: false
+- key: Xue2010Hyperbranched
+  type: article
+  year: 2010
+  title: Synthesis of Hyperbranched Poly(meta-phenylene)s via Suzuki Polycondensation of a Branched AB<sub>2</sub> Monomer
+  authors:
+  - Z. Xue
+  - A. D. Finke
+  - J. S. Moore
+  venue: Macromolecules
+  volume: '43'
+  pages: 9277–9282
+  doi: 10.1021/ma102023a
+  preprint: false
+- key: Finke2010Nitrides
+  type: article
+  year: 2010
+  title: Lewis Acid Activation of Molybdenum Nitrides for Alkyne Metathesis
+  authors:
+  - A. D. Finke
+  - J. S. Moore
+  venue: Chemical Communications
+  volume: '46'
+  pages: 7939–7941
+  doi: 10.1039/C0CC03113E
+  preprint: false
+- key: Odom2010TTFTCNQ
+  type: article
+  year: 2010
+  title: Restoration of Conductivity with TTF-TCNQ Charge Transfer Salts
+  authors:
+  - S. A. Odom
+  - M. M. Caruso
+  - A. D. Finke
+  - A. M. Prokup
+  - J. A. Ritchey
+  - J. H. Leonard
+  - S. R. White
+  - N. R. Sottos
+  - J. S. Moore
+  venue: Advanced Functional Materials
+  volume: '20'
+  pages: 1721–1727
+  doi: 10.1002/adfm.201000159
+  preprint: false
+- key: Finke2010DABCO
+  type: article
+  year: 2010
+  title: 1-Bromomethyl-4-aza-1-azoniabicyclo[2.2.2]octane bromide
+  authors:
+  - A. D. Finke
+  - D. L. Gray
+  - J. S. Moore
+  venue: 'Acta Crystallographica Section E: Structure Reports Online'
+  volume: '66'
+  pages: o377
+  doi: 10.1107/S1600536810000292
+  preprint: false
+- key: Finke2009ZnCl2
+  type: article
+  year: 2009
+  title: Zinc Chloride-Promoted Aryl Bromide–Alkyne Cross-Coupling Reactions at Room Temperature
+  authors:
+  - A. D. Finke
+  - E. C. Elleby
+  - M. J. Boyd
+  - H. Weissman
+  - J. S. Moore
+  venue: The Journal of Organic Chemistry
+  volume: '74'
+  pages: 8897–8900
+  doi: 10.1021/jo902015w
+  preprint: false
+- key: Finke2008Dendrons
+  type: article
+  year: 2008
+  title: Iterative Synthesis of 1,3,5-Polyphenylene Dendrons via C–H Activation
+  authors:
+  - A. D. Finke
+  - J. S. Moore
+  venue: Organic Letters
+  volume: '10'
+  pages: 4851–4854
+  doi: 10.1021/ol8019605
+  note: Highlight in SYNFACTS 2009, 153
+  preprint: false

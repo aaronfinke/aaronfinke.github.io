@@ -1,17 +1,45 @@
 ---
 layout: default
 ---
+<section class="hero">
+  <div class="hero-text">
+    <h1>{{ site.author.name }}, Ph.D.</h1>
+    <p class="hero-role">Crystallographer. Chemist. Third thing(?).</p>
+    <div class="hero-links">
+      <a class="btn" href="{{ '/cv/' | relative_url }}">Curriculum vitae</a>
+      <a class="btn btn-ghost" href="{{ '/publications/' | relative_url }}">Publications</a>
+      {% include email.html class="btn btn-ghost" label="Get in touch" %}
+    </div>
+  </div>
+  <div class="hero-photo">
+    {% if site.photo != "" %}<img src="{{ '/assets/images/' | append: site.photo | relative_url }}" alt="Portrait of {{ site.author.name }}">{% else %}<div class="avatar" aria-hidden="true">AF</div>{% endif %}
+  </div>
+</section>
 
-{{ content }}
+<div class="home-intro">{{ content }}</div>
 
-<ul class="post-list">
-  {% for post in site.posts %}
-  <li>
-    <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-    <h3><a href="{{ post.link | default: post.url | relative_url }}">{{ post.title | escape }}</a></h3>
-    {% if post.excerpt %}{{ post.excerpt }}{% endif %}
-  </li>
-  {% endfor %}
-</ul>
+<div class="home-grid">
+  <section>
+    <div class="section-head"><h2>Latest from the blog</h2><a href="{{ '/blog/' | relative_url }}">All posts &rarr;</a></div>
+    <ul class="card-list">
+      {% for post in site.posts limit: 3 %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%-d %b %Y" }}</span>
+        <a class="card-title" href="{{ post.link | default: post.url | relative_url }}">{{ post.title | escape }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
 
-<p><a href="{{ '/feed.xml' | relative_url }}">Subscribe via RSS</a></p>
+  <section>
+    <div class="section-head"><h2>Recent publications</h2><a href="{{ '/publications/' | relative_url }}">All publications &rarr;</a></div>
+    <ul class="card-list">
+      {% for p in site.data.publications limit: 4 %}
+      <li>
+        <span class="post-meta">{{ p.year }} · {{ p.venue }}</span>
+        <a class="card-title" href="{% if p.doi %}https://doi.org/{{ p.doi }}{% else %}{{ '/publications/' | relative_url }}{% endif %}">{{ p.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>

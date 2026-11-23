@@ -1,0 +1,113 @@
+education:
+  - dates: "2006 – 2011"
+    degree: "Ph.D., Chemistry"
+    place: "University of Illinois, Urbana-Champaign, IL, USA"
+    detail: "Advisor: Prof. Jeffrey S. Moore. Thesis: “Carbon-Carbon Bond Formation Methods for the Preparation of Shape-Persistent Architectures”"
+  - dates: "2002 – 2006"
+    degree: "B.S., Chemistry"
+    place: "University of Arizona, Tucson, AZ, USA"
+
+experience:
+  - dates: "Mar 2024 – present"
+    role: "Instrument Data Scientist, NMX (Neutron Macromolecular Crystallography)"
+    place: "Data Management and Scientific Computing (DMSC), European Spallation Source, Lund, Sweden"
+  - dates: "Mar 2022 – Feb 2024"
+    role: "Beamline Scientist, BioMAX Beamline"
+    place: "MAX IV Laboratory, Lund University, Lund, Sweden"
+  - dates: "Sep 2016 – Feb 2022"
+    role: "Beamline Scientist, Macromolecular Crystallography"
+    place: "Cornell High Energy Synchrotron Source (MacCHESS), Cornell University, Ithaca, NY, USA"
+  - dates: "Jul 2014 – Jul 2016"
+    role: "Postdoctoral Fellow, Macromolecular Crystallography"
+    place: "Paul Scherrer Institute, Villigen, Switzerland"
+    detail: "In collaboration with Global Phasing Ltd. Advisors: Dr. Gérard Bricogne and Dr. Meitian Wang"
+  - dates: "Apr 2011 – Jun 2014"
+    role: "NSF International Research Postdoctoral Fellow"
+    place: "ETH Zürich, Zürich, Switzerland"
+    detail: "Advisor: Prof. François Diederich"
+  - dates: "2006 – 2011"
+    role: "Graduate / Teaching Assistant"
+    place: "University of Illinois, Urbana-Champaign, IL, USA"
+    detail: "Advisor: Prof. Jeffrey S. Moore"
+  - dates: "Jun – Aug 2005"
+    role: "Summer Undergraduate Researcher"
+    place: "Georgia Institute of Technology, Atlanta, GA, USA"
+    detail: "Advisor: Prof. Seth R. Marder"
+  - dates: "Aug 2003 – Dec 2005"
+    role: "Undergraduate Researcher"
+    place: "University of Arizona, Tucson, AZ, USA"
+    detail: "Advisor: Prof. Dominic V. McGrath"
+
+teaching:
+  - dates: "2009"
+    role: "Head Lecturer, Organic Chemistry Laboratory"
+    place: "University of Illinois, Urbana-Champaign"
+  - dates: "2007"
+    role: "Teaching Assistant, Organic Chemistry Lecture"
+    place: "University of Illinois, Urbana-Champaign"
+  - dates: "2006 – 2007"
+    role: "Teaching Assistant, Advanced Organic Synthesis Laboratory"
+    place: "University of Illinois, Urbana-Champaign"
+  - dates: "2003 – 2006"
+    role: "Teaching Assistant, Organic Chemistry Laboratory"
+    place: "University of Arizona"
+
+societies:
+  - dates: "2019 – 2020"
+    role: "Light Sources SIG Chair, American Crystallographic Association"
+  - dates: "2010 – present"
+    role: "Member, American Crystallographic Association"
+
+awards:
+  - dates: "2011 – 2013"
+    text: "National Science Foundation International Postdoctoral Research Fellowship"
+  - dates: "2010"
+    text: "American Crystallographic Association Travel Award"
+  - dates: "2009 – 2010"
+    text: "Hach Graduate Fellowship, University of Illinois"
+  - dates: "2009"
+    text: "R.C. Fuson Travel Award, for travel to the 238th National ACS Meeting, Washington, DC"
+  - dates: "2008"
+    text: "J.C. Martin Travel Award, for travel to the International Symposium on Macrocyclic and Supramolecular Chemistry"
+
+patents:
+  - text: "US Patent 8,846,404, “System for Visual Indication of Mechanical Damage.” Odom, S. A.; Caruso, M. M.; Finke, A. D.; Jackson, A. C.; Moore, J. S.; Sottos, N. R.; White, S. R. Published September 30, 2014."
+  - text: "US Patent 8,679,621, “Materials and Methods for Autonomous Restoration of Electrical Conductivity.” White, S. R.; Blaiszik, B. J.; Baginska, M. B.; Odom, S. A.; Caruso, M. M.; Jackson, A. A.; Ritchey, J. R.; Finke, A. D.; Braun, P. V.; Moore, J. S.; Sottos, N. R.; Amine, K. Published March 25, 2014."
+
+languages:
+  - "English (native)"
+  - "German (intermediate)"
+
+presentations:
+  - kind: Organiser
+    text: "CHESS 2030: Ambient Crystallography, a virtual workshop. Cornell University, 30 Sep – 1 Oct 2021."
+  - kind: Oral
+    text: "“A Portable Fixed-Target Sample Delivery System for in-situ Serial Synchrotron Crystallography.” American Crystallographic Association Meeting, 8 Aug 2020."
+  - kind: Oral
+    text: "“Room Temperature Serial Crystallography for the Masses: How Structural Biologists Can Benefit from Crystallographers’ Newest Toys.” American Crystallographic Association Meeting, Covington, KY, USA, 24 Jul 2019."
+  - kind: Poster
+    text: "“A Serial Oscillation Crystallography Beamline at CHESS.” Synchrotron Radiation Instrumentation Conference, Taipei, Taiwan, 11 Jun 2018."
+  - kind: Poster
+    text: "“High-Throughput Oscillation Serial Crystallography.” 24th Congress of the International Union of Crystallography, Hyderabad, India, 21–28 Aug 2017."
+  - kind: Oral
+    text: "“Probing the Limits of Native SAD Phasing.” American Crystallographic Association Meeting, Denver, CO, USA, 23 Jul 2016."
+  - kind: Oral
+    text: "“Advances in Synchrotron Data Collection Strategies for Experimental Phasing.” 29th European Crystallographic Meeting, Rovinj, Croatia, 24 Aug 2015."
+  - kind: Poster
+    text: "“6,6-Dicyanopentafulvenes: Diverse Reactivity from a Unique Building Block.” 15th International Symposium on Novel Aromatic Compounds (ISNA-15), Taipei, Taiwan, 1 Aug 2013."
+  - kind: Poster
+    text: "“Fulvenoid, Nonplanar Push-Pull Chromophores.” Electronic Processes in Organic Materials Gordon Research Conference, Lucca, Italy, 4 Jun 2012."
+  - kind: Poster
+    text: "“X-Ray Crystallographic Analysis of Carbazole-Ethynylene Macrocycles and Their Co-Crystals with Guests.” 14th International Symposium on Novel Aromatic Compounds (ISNA-14), Eugene, OR, USA, 25 Jul 2011."
+  - kind: Poster
+    text: "“N-alkyl-DABCOnium Trihalozincates: Privileged Scaffolds for the Preparation of Noncentrosymmetric Solids.” Annual Meeting of the American Crystallographic Association, Chicago, IL, USA, 25 Jul 2010."
+  - kind: Oral
+    text: "“Chemistry Blogging: From Literature to Controversy to Community to…” 240th National ACS Meeting, Boston, MA, USA, 22 Aug 2010."
+  - kind: Poster
+    text: "“N-alkyl-DABCOnium Trihalozincates: Privileged Scaffolds for the Preparation of Noncentrosymmetric Solids.” 240th National ACS Meeting, Boston, MA, USA, 22 Aug 2010."
+  - kind: Oral
+    text: "“Palladium-Catalyzed Aryl Bromide-Alkyne Cross-Coupling Reactions Promoted by Zinc Salts: Suppression of Diyne Byproducts.” 238th National ACS Meeting, Washington, DC, USA, 18 Aug 2009."
+  - kind: Oral
+    text: "“C–H Activation: A New Tool in the Preparation of Phenylene Scaffolding.” 22nd Annual Allerton Conference, Allerton Park, IL, USA, 8 Nov 2008."
+  - kind: Poster
+    text: "“Rapid and Efficient Synthesis of 1,3,5-Polyphenylene Dendrons via C–H Activation.” International Symposium on Macrocyclic and Supramolecular Chemistry, Las Vegas, NV, USA, 18 Jul 2008."

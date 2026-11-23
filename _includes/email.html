@@ -1,0 +1,8 @@
+{%- comment -%}
+  Spam-resistant email link. The address never appears in the HTML: user and domain are stored
+  reversed, without the "@", and assets/js/email.js assembles the mailto: only when clicked.
+  Params: label (link text, default "Email"), class (extra classes),
+          reveal (true = first click shows the address as text, second click opens mail).
+{%- endcomment -%}
+{%- assign email_parts = site.contact_email | split: "@" -%}
+<a href="#" class="js-email{% if include.class %} {{ include.class }}{% endif %}" data-u="{{ email_parts[0] | split: '' | reverse | join: '' }}" data-d="{{ email_parts[1] | split: '' | reverse | join: '' }}"{% if include.reveal %} data-reveal title="Click to show email address"{% endif %}>{{ include.label | default: "Email" }}</a>
