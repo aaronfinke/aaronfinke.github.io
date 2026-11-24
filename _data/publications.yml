@@ -1,5 +1,18 @@
+
+- key: FinkeLawless2026
+  type: preprint
+  title: "lawless: Normalization, Scaling, and Merging of Laue Data in the AIMLESS Framework"
+  authors: "Aaron D. Finke"
+  venue: "arXiv preprint (submitted to Journal of Applied Crystallography)"
+  year: 2026
+  date: 2026-11-24
+  doi: "10.48550/arXiv.2611.28131"
+  arxiv: "2611.28131"
+  url: "https://arxiv.org/abs/2611.28131"
+  note: "27 pages, 6 figures"
+
 - key: Neutze2026ba3
-  type: misc
+  type: preprint
   year: 2026
   title: Structural mechanism of proton pumping by ba<sub>3</sub>-type cytochrome <em>c</em> oxidase
   authors:
