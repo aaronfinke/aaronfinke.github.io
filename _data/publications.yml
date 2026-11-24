@@ -2,7 +2,8 @@
 - key: FinkeLawless2026
   type: preprint
   title: "lawless: Normalization, Scaling, and Merging of Laue Data in the AIMLESS Framework"
-  authors: "Aaron D. Finke"
+  authors: 
+  - A. D. Finke
   venue: "arXiv preprint (submitted to Journal of Applied Crystallography)"
   year: 2026
   date: 2026-11-24
